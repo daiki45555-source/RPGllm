@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>七つの願いが降る庭で - In the Garden Where Seven Wishes Fall</title>
+    <meta
+      name="description"
+      content="魂が漂着する箱庭、ガイアレム。LLMが紡ぐ残酷で美しいRPG。"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Serif+JP:wght@400;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="theme-dark">
+    <!-- Boot Screen for Audio Unlock -->
+    <div id="boot-screen">
+      <div class="boot-prompt">INITIALIZING SYSTEM... [ CLICK TO CONNECT ]</div>
+    </div>
+
+    <div id="app">
+      <header class="system-header">
+        <div class="connection-status">
+          <span class="status-dot pulse"></span>
+          <span class="status-text">SYSTEM: ONLINE</span>
+        </div>
+        <div class="user-id">USER: UNKNOWN</div>
+        <nav class="system-nav">
+          <!-- Dedicated Command UI -->
+          <div class="command-module">
+            <div class="cmd-group">
+              <span class="header-label">AUTO</span>
+              <label class="toggle-switch small">
+                <input type="checkbox" id="header-progression-toggle" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="cmd-separator"></div>
+            <button id="btn-skip" class="btn-console cmd-btn">
+              SKIP <span class="state-text">OFF</span>
+            </button>
+          </div>
+          <button id="btn-inventory" class="btn-console">INV</button>
+          <button id="btn-settings" class="btn-console">CONFIG</button>
+        </nav>
+      </header>
+
+      <main id="game-container">
+        <div id="scene-renderer">
+          <!-- Glitchy visuals and text will appear here -->
+          <div class="glitch-overlay"></div>
+          <div id="background-layer"></div>
+          <div id="content-layer">
+            <section id="introduction" class="content-section active">
+              <div class="typewriter-container">
+                <div id="title-screen-ui">
+                  <h1 class="main-title">七つの願いが降る庭で</h1>
+                  <p class="subtitle italic-jp">
+                    In the Garden Where Seven Wishes Fall
+                  </p>
+                  <div class="actions">
+                    <button id="btn-start" class="btn-premium">
+                      接続を開始する
+                    </button>
+                    <button
+                      id="btn-option"
+                      class="btn-premium"
+                      style="margin-top: 1rem"
+                    >
+                      Option
+                    </button>
+                  </div>
+                </div>
+                <div id="intro-text" class="text-block"></div>
+              </div>
+            </section>
+
+            <section id="character-creation" class="content-section hidden">
+              <div class="char-create-wrapper">
+                <h2 class="section-title">魂の器の生成</h2>
+
+                <div class="name-input-group">
+                  <label for="player-name">個体名（Name）</label>
+                  <input
+                    type="text"
+                    id="player-name"
+                    maxlength="8"
+                    placeholder="名もなき魂"
+                    autocomplete="off"
+                  />
+                  <div class="input-hint">最大8文字</div>
+                </div>
+
+                <div class="stats-allocation">
+                  <div class="points-header">
+                    <span class="label">残りリソース:</span>
+                    <span id="remaining-points" class="points-value">15</span>
+                  </div>
+
+                  <div class="stats-grid" id="stats-grid"></div>
+                </div>
+
+                <div class="creation-footer">
+                  <div id="creation-message" class="system-message"></div>
+                  <div class="button-group">
+                    <button id="btn-auto-stats" class="btn-premium secondary">
+                      おまかせ
+                    </button>
+                    <button id="btn-confirm-creation" class="btn-premium">
+                      生成完了
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="evaluation" class="content-section">
+              <div class="evaluation-container">
+                <div id="counselor-dialogue" class="text-block italic-jp"></div>
+                <div id="question-container" class="question-box">
+                  <div id="question-text" class="text-block"></div>
+                  <div id="options-container" class="options-grid"></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <!-- Inventory Modal -->
+      <div id="inventory-modal" class="modal-overlay hidden">
+        <div class="modal-content inventory-panel">
+          <header class="modal-header">
+            <span class="mono-text">FILE: USER_INVENTORY.dat</span>
+            <button id="btn-close-inventory" class="btn-close">×</button>
+          </header>
+          <div class="inventory-body">
+            <div class="inventory-tabs">
+              <button class="tab-btn active" data-tab="items">ITEMS</button>
+              <button class="tab-btn" data-tab="equipment">EQUIP</button>
+            </div>
+            <div id="inventory-list" class="item-list">
+              <!-- Item entries will be injected here -->
+            </div>
+          </div>
+          <footer class="modal-footer">
+            <div id="item-details" class="item-details-box">
+              <p class="select-prompt">SELECT AN ITEM FOR DETAILS</p>
+            </div>
+          </footer>
+        </div>
+      </div>
+
+      <footer class="system-footer">
+        <div id="console-output" class="mono-text">
+          Initializing Gaialem interface... done.
+        </div>
+      </footer>
+    </div>
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-content settings-panel">
+        <header class="modal-header">
+          <span class="mono-text">SYSTEM: CONFIGURATION_MODE</span>
+          <button id="btn-close-settings" class="btn-close">×</button>
+        </header>
+        <div class="settings-body">
+          <!-- Sidebar / Tabs -->
+          <nav class="settings-nav">
+            <button class="settings-tab active" data-tab="audio">
+              CONNECTION
+            </button>
+            <button class="settings-tab" data-tab="visual">PERCEPTION</button>
+            <button class="settings-tab" data-tab="system">PROTOCOL</button>
+            <button class="settings-tab" data-tab="archives">ARCHIVES</button>
+          </nav>
+
+          <!-- Content Area -->
+          <div class="settings-content">
+            <!-- AUDIO TAB -->
+            <div id="tab-audio" class="tab-pane active">
+              <h3 class="pane-title">AUDIO_STREAM_SETTINGS</h3>
+
+              <div class="setting-group">
+                <label>BGM_VOLUME (Background)</label>
+                <div class="range-wrapper">
+                  <input
+                    type="range"
+                    id="vol-bgm"
+                    min="0"
+                    max="100"
+                    value="50"
+                  />
+                  <span class="val-display">50%</span>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <label>SE_VOLUME (System Effects)</label>
+                <div class="range-wrapper">
+                  <input
+                    type="range"
+                    id="vol-se"
+                    min="0"
+                    max="100"
+                    value="50"
+                  />
+                  <span class="val-display">50%</span>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <label>SOUND_MODE</label>
+                <select id="sound-mode" class="system-select">
+                  <option value="standard">STANDARD (Stereo)</option>
+                  <option value="binaural">IMMERSIVE (Binaural Beta)</option>
+                  <option value="mono">SIMPLE (Mono)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- VISUAL TAB -->
+            <div id="tab-visual" class="tab-pane">
+              <h3 class="pane-title">VISUAL_PERCEPTION_FILTER</h3>
+
+              <div class="setting-group row">
+                <label>CRT_EFFECT (Glitch Overlay)</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-crt" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-group">
+                <label>TERMINAL_COLOR_THEME</label>
+                <select id="terminal-color" class="system-select">
+                  <option value="green">PHOSPHOR_GREEN (Default)</option>
+                  <option value="amber">AMBER_RETRO</option>
+                  <option value="cyan">CYBER_CYAN</option>
+                  <option value="red">EMERGENCY_RED</option>
+                </select>
+              </div>
+
+              <div class="setting-group">
+                <label>TEXT_RENDERING_SPEED</label>
+                <select id="text-speed" class="system-select">
+                  <option value="normal">NORMAL</option>
+                  <option value="fast">FAST (High Bandwidth)</option>
+                  <option value="slow">SLOW (Analyzing)</option>
+                  <option value="instant">INSTANT (Direct Load)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- SYSTEM TAB -->
+            <div id="tab-system" class="tab-pane">
+              <h3 class="pane-title">SYSTEM_PROTOCOLS</h3>
+
+              <div class="setting-group">
+                <label>SAVE_DATA_MANAGEMENT</label>
+                <button id="btn-reset-save" class="btn-danger">
+                  RESET REALITY (Delete Save)
+                </button>
+                <p class="setting-desc">
+                  Warning: This action cannot be undone. All memories will be
+                  lost.
+                </p>
+              </div>
+            </div>
+
+            <!-- ARCHIVES TAB -->
+            <div id="tab-archives" class="tab-pane">
+              <h3 class="pane-title">SYSTEM_ARCHIVES</h3>
+              <div class="credits-box">
+                <p>Gaialem System v0.9.2</p>
+                <p>Developed by: RPGllm Team</p>
+                <p>Music: AI Generated / Asset Store</p>
+                <p>Scenario: AI Collaborative</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="crt-overlay pointer-events-none"></div>
+
+    <!-- Event Overlay -->
+    <div id="event-overlay" class="event-layer hidden">
+      <div id="event-background"></div>
+      <div class="event-content">
+        <div id="character-container" class="character-display hidden">
+            <img id="event-character-img" src="" alt="Character" />
+        </div>
+        <div id="event-dialogue-container" class="dialogue-box">
+          <div id="event-speaker" class="speaker-name"></div>
+          <div id="event-text" class="dialogue-text"></div>
+        </div>
+        <div id="event-choices" class="choices-grid hidden"></div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="items.js"></script>
+    <!-- SoundGenerator must load BEFORE AudioManager (dependency) -->
+    <script src="js/systems/sound_generator.js"></script>
+    <script src="AudioManager.js"></script>
+    <script src="ShadowEvaluation.js"></script>
+
+    <!-- Event System -->
+    <script src="js/events/event_data_jack.js"></script>
+    <script src="js/events/event_data_marianne.js"></script>
+    <!-- Game Logic -->
+    <script type="module" src="js/utils/utils.js"></script>
+    <script src="js/events/prologue_event.js"></script>
+    <script src="js/systems/settings_manager.js"></script>
+    <script src="js/ui/ui_manager.js"></script>
+    <script src="js/systems/event_manager.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
