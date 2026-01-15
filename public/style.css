@@ -832,15 +832,17 @@ input[type=range] {
   gap: 1.5rem;
 }
 
-/* Character Display */
+/* Character Display - LEFT ALIGNED to avoid overlapping dialogue */
 .character-display {
   position: fixed;
-  bottom: 150px; /* Position above dialogue box */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  max-height: 60vh;
+  bottom: 0;
+  left: 5%;                    /* 左寄せ配置 */
+  transform: none;             /* 中央揃えのtransformを削除 */
+  z-index: 5;                  /* ダイアログより後ろ */
+  max-height: 85vh;
   pointer-events: none;
+  display: flex;
+  align-items: flex-end;       /* 下揃え */
 }
 
 .character-display.hidden {
@@ -848,10 +850,10 @@ input[type=range] {
 }
 
 #event-character-img {
-  max-height: 60vh;
+  max-height: 80vh;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9));
 }
 
 .dialogue-box {
@@ -861,6 +863,10 @@ input[type=range] {
   border-radius: 4px;
   box-shadow: 0 0 20px rgba(0, 255, 170, 0.1);
   min-height: 150px;
+  /* 右側に配置してキャラと被らないように */
+  margin-left: auto;
+  width: 60%;
+  z-index: 10;
 }
 
 .speaker-name {
@@ -883,6 +889,9 @@ input[type=range] {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
+    /* ダイアログと同じく右寄せ */
+    margin-left: auto;
+    width: 60%;
   }
   
   .choices-grid.hidden {
