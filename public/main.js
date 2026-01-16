@@ -446,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await new Promise(r => setTimeout(r, 500));
         document.body.classList.remove('glitch-active');
 
-        await elements.audioManager.playBGM('./BGM/counseling_theme.mp3');
+        await elements.audioManager.playBGM('./BGM/ゆりかご（カルマカウンセリング時のＢＧＭ）.mp3');
         
         if (elements.backgroundLayer) {
             elements.backgroundLayer.classList.remove("bg-sky");
