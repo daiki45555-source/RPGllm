@@ -94,6 +94,7 @@ class EventManager {
             // Simple mapping for keys
             const bgmMap = {
                 'jack_routine': './BGM/ジャックとの日常.mp3',
+                'guild_theme': './BGM/鴉の巣　基本BGM　宿　メインホール.mp3', // 鴉の巣BGM
                 // Add others as needed
             };
             if (bgmMap[bgmPath]) bgmPath = bgmMap[bgmPath];
@@ -166,6 +167,12 @@ class EventManager {
 
     endEvent() {
         console.log("Event Ended");
+        
+        // Call onComplete callback if defined
+        if (this.activeEvent && typeof this.activeEvent.onComplete === 'function') {
+            this.activeEvent.onComplete();
+        }
+        
         this.uiManager.showEventOverlay(false);
         this.activeEvent = null;
         this.currentRoute = null;

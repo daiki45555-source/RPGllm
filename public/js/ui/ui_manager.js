@@ -38,21 +38,56 @@ class UIManager {
         this.textElement.textContent = "";
         this.choicesContainer.classList.add('hidden'); // Hide choices while typing/reading
         
-        // Simple typewriter effect or instant text
-        // For now, let's just set it. We can add typewriter later if needed or reuse existing one.
-        this.textElement.textContent = text;
-
-        // Click to proceed
-        // Remove old listeners first to avoid duplicates (naive approach)
-        // Better: store the listener reference.
-        // For simplicity in this iteration, we assume the EventManager handles the "when to call next" by passing a callback
-        // WE need to bind a click event to the container to trigger 'onNext'
+        // タイプライター効果
+        this.isTyping = true;
+        this.fullText = text;
+        let i = 0;
+        const speed = 30; // 30ms per character
         
-        this.currentNextCallback = onNext;
+        const typeNext = () => {
+            if (!this.isTyping) {
+                // スキップされた場合は即時表示
+                this.textElement.textContent = this.fullText;
+                this.currentNextCallback = onNext;
+                return;
+            }
+            
+            if (i < text.length) {
+                this.textElement.textContent += text.charAt(i);
+                
+                // 5文字ごとにタイプライター音（負荷軽減）
+                if (i % 5 === 0 && window.audioManager) {
+                    window.audioManager.playSE('typewriter', 0.15); // 15%音量
+                }
+                
+                i++;
+                setTimeout(typeNext, speed);
+            } else {
+                // 完了
+                this.isTyping = false;
+                this.currentNextCallback = onNext;
+            }
+        };
+        
+        typeNext();
+    }
+
+    // タイプライター効果をスキップ
+    skipTypewriter() {
+        if (this.isTyping && this.fullText) {
+            this.isTyping = false;
+            this.textElement.textContent = this.fullText;
+        }
     }
 
     // Call this from main event listener
     handleInput() {
+        // タイプ中ならスキップ
+        if (this.isTyping) {
+            this.skipTypewriter();
+            return;
+        }
+        
         if (this.currentNextCallback) {
             const cb = this.currentNextCallback;
             this.currentNextCallback = null;

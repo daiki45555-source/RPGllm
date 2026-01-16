@@ -129,7 +129,9 @@ class AudioManager {
                 'confirm': './se/ピピ！.mp3',
                 'error': './se/エラー　ビーブ音.mp3',
                 'ambience': './se/エアコン※アンチグラヴィティ君へ　音うるさいから　少し下げてもいいかも※.mp3',
-                'hover': './se/マウスインタラクト　カーソル移動1.mp3'
+                'hover': './se/マウスインタラクト　カーソル移動1.mp3',
+                'typewriter': './se/タイプライター.mp3',
+                'jack_last_battle': './se/ジャックラストバトル.mp3'
             };
 
             const sePath = seFiles[seName];

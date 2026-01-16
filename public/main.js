@@ -240,6 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (i < text.length) {
                     element.innerHTML += text.charAt(i);
+                    // 3文字ごとにタイプライターSE再生（音量控えめ）
+                    if (i % 3 === 0 && window.audioManager) {
+                        window.audioManager.playSE('typewriter', 0.3);
+                    }
                     i++;
                 } else {
                     clearInterval(timer);
@@ -536,7 +540,15 @@ document.addEventListener("DOMContentLoaded", () => {
             "「どうぞ、その形を忘れないで。大事になさってください……。」",
             "「……そして、この世界の様に泣かないでくださいね。」",
             "「ただ、楽しんでください……。涙でできた、この美しい箱庭で。」",
-            "「ほんの一間の……夢の時間を……。」"
+            "「ほんの一間の……夢の時間を……。」",
+            "「……そう。まずは……手始めに……」",
+            "「この世界には、『６つの宝物（ねがい）』が隠されています。」",
+            "「……1つでも、いいですよ。」",
+            "「1つ集めれば……あなたはこの世界の英雄です。」",
+            "「この物語は、あなたによって救われます。」",
+            "「郊外の神殿に来てください。……エンディングですよ。」",
+            "「……まあ、6つすべてを集めても、かまいませんけれど。」",
+            "「全てを集めた者が何を見るのか……私は、知らないのです。……ふふ。」"
         ];
 
         for (const line of closingLines) {
