@@ -129,9 +129,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.KarmaGraph) {
         log("Initializing Karma Graph...");
         window.karmaGraph = new window.KarmaGraph('karma-canvas');
+        // ミニ版もある場合は初期化
+        if (document.getElementById('karma-canvas-mini')) {
+            window.karmaGraphMini = new window.KarmaGraph('karma-canvas-mini');
+        }
         log("Karma Graph initialized.");
     } else {
         console.warn("KarmaGraph class not found.");
+    }
+
+    // Initialize Vital Gauge
+    if (window.VitalGauge) {
+        log("Initializing Vital Gauge...");
+        window.vitalGauge = new window.VitalGauge();
+        // 初期ステータス（デバッグ用にコンソールから操作可能）
+        window.testDamage = (amount) => window.vitalGauge.takeDamage(amount);
+        window.testHeal = (amount) => window.vitalGauge.heal(amount);
+        log("Vital Gauge initialized.");
+    } else {
+        console.warn("VitalGauge class not found.");
     }
 
     // State
@@ -573,10 +589,17 @@ document.addEventListener("DOMContentLoaded", () => {
             window.karmaGraph.initFromEvaluation(result.karma);
             window.karmaGraph.show();
             
+            // ミニ版も連携
+            if (window.karmaGraphMini) {
+                window.karmaGraphMini.initFromEvaluation(result.karma);
+            }
+            
             // S.I.従順度を更新
             const siValue = document.getElementById('si-obedience-value');
+            const siSyncValue = document.getElementById('si-sync-value');
+            const obedience = window.karmaGraph.getSIObedience();
+            
             if (siValue) {
-                const obedience = window.karmaGraph.getSIObedience();
                 siValue.textContent = obedience.toFixed(1);
                 
                 // レベルに応じてクラスを設定
@@ -586,7 +609,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 else if (obedience < 9) siValue.classList.add('high');
                 else siValue.classList.add('max');
             }
+            
+            // Vital Gauge内のS.I. Syncも更新
+            if (siSyncValue) {
+                siSyncValue.textContent = obedience.toFixed(1);
+            }
+            
             log("Karma Graph updated with evaluation results.");
+        }
+        
+        // Vital Gaugeを表示
+        if (window.vitalGauge) {
+            window.vitalGauge.show();
+            log("Vital Gauge shown.");
         }
 
         await new Promise(r => setTimeout(r, 2000));
