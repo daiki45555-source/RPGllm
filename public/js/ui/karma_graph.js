@@ -238,20 +238,22 @@ class KarmaGraph {
         if (!karmaResult) return;
         
         // ShadowEvaluationの結果を反映
-        // 診断結果はそのままの値（プラスマイナスあり）を保持
+        // 診断結果を x3 で初期化（診断だけでは1メーター程度に収まるように）
+        const multiplier = 3;
+        
         Object.keys(karmaResult).forEach(key => {
             // 6つの主要カルマのみ表示（隠しカルマは非表示）
             const isMainKarma = this.axes.some(axis => axis.id === key);
             if (isMainKarma) {
-                // 生の値を保存（マイナスもあり得る）
-                this.karma[key] = karmaResult[key] || 0;
+                // 生の値を x3 で保存
+                this.karma[key] = (karmaResult[key] || 0) * multiplier;
                 // 表示用には0以上に制限
                 const displayValue = Math.max(0, this.karma[key]);
                 this.animateTo(key, displayValue);
             }
         });
         
-        console.log('Karma initialized from evaluation:', this.karma);
+        console.log('Karma initialized from evaluation (x3):', this.karma);
     }
     
     // 現在のカルマ値を取得（生の値）
