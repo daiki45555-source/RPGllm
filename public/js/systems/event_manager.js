@@ -176,6 +176,23 @@ class EventManager {
         this.uiManager.showEventOverlay(false);
         this.activeEvent = null;
         this.currentRoute = null;
+        
+        // === プロローグ終了後：ロケーションシステム起動 ===
+        // LocationManagerがまだ初期化されていなければ初期化
+        if (!window.locationManager && window.LocationManager) {
+            console.log("[EventManager] ロケーションシステムを初期化...");
+            window.locationManager = new LocationManager();
+            
+            // 鴉の巣・宿部屋からスタート
+            window.locationManager.currentLocation = 'crows_nest_room';
+            window.locationManager.updateUI();
+        }
+        
+        // ロケーションUIを表示
+        if (window.locationManager) {
+            window.locationManager.show();
+            console.log("[EventManager] ロケーションUI表示完了");
+        }
     }
 }
 
