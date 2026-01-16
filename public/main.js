@@ -125,6 +125,15 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Event System classes missing.");
     }
 
+    // Initialize Karma Graph
+    if (window.KarmaGraph) {
+        log("Initializing Karma Graph...");
+        window.karmaGraph = new window.KarmaGraph('karma-canvas');
+        log("Karma Graph initialized.");
+    } else {
+        console.warn("KarmaGraph class not found.");
+    }
+
     // State
     let isAutoProgression = true;
     let isSkipping = false;
@@ -558,6 +567,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         localStorage.setItem('player_karma', JSON.stringify(result.karma));
         localStorage.setItem('player_tags', JSON.stringify(result.tags));
+
+        // カルマグラフを表示し、診断結果を反映
+        if (window.karmaGraph) {
+            window.karmaGraph.initFromEvaluation(result.karma);
+            window.karmaGraph.show();
+            
+            // S.I.従順度を更新
+            const siValue = document.getElementById('si-obedience-value');
+            if (siValue) {
+                const obedience = window.karmaGraph.getSIObedience();
+                siValue.textContent = obedience.toFixed(1);
+                
+                // レベルに応じてクラスを設定
+                siValue.classList.remove('low', 'mid', 'high', 'max');
+                if (obedience < 3) siValue.classList.add('low');
+                else if (obedience < 6) siValue.classList.add('mid');
+                else if (obedience < 9) siValue.classList.add('high');
+                else siValue.classList.add('max');
+            }
+            log("Karma Graph updated with evaluation results.");
+        }
 
         await new Promise(r => setTimeout(r, 2000));
         log("System: Deployment initiated. Redirecting to Gaialem...");

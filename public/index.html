@@ -50,6 +50,16 @@
       </header>
 
       <main id="game-container">
+        <!-- カルマグラフUI（左上固定） -->
+        <div id="karma-graph-container" class="karma-graph-ui hidden">
+          <div class="karma-graph-header">KARMA_RESONANCE</div>
+          <canvas id="karma-canvas" width="180" height="180"></canvas>
+          <div class="karma-graph-footer">
+            <span class="si-label">S.I. SYNC:</span>
+            <span id="si-obedience-value" class="si-value">0.0</span>
+          </div>
+        </div>
+
         <div id="scene-renderer">
           <!-- Glitchy visuals and text will appear here -->
           <div class="glitch-overlay"></div>
@@ -294,7 +304,7 @@
       <div id="event-background"></div>
       <div class="event-content">
         <div id="character-container" class="character-display hidden">
-            <img id="event-character-img" src="" alt="Character" />
+          <img id="event-character-img" src="" alt="Character" />
         </div>
         <div id="event-dialogue-container" class="dialogue-box">
           <div id="event-speaker" class="speaker-name"></div>
@@ -319,6 +329,7 @@
     <script src="js/events/prologue_event.js"></script>
     <script src="js/systems/settings_manager.js"></script>
     <script src="js/ui/ui_manager.js"></script>
+    <script src="js/ui/karma_graph.js"></script>
     <script src="js/systems/event_manager.js"></script>
     <script type="module" src="main.js"></script>
   </body>

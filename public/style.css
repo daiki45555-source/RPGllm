@@ -975,3 +975,63 @@ body.crt-mode::before {
     text-shadow: 0 0 5px var(--accent-color);
     border-color: var(--accent-color);
 }
+
+/* Karma Graph UI */
+.karma-graph-ui {
+    position: fixed;
+    top: 60px;
+    left: 20px;
+    z-index: 500;
+    background: rgba(5, 5, 5, 0.85);
+    border: 1px solid rgba(0, 255, 100, 0.3);
+    border-radius: 4px;
+    padding: 10px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.1);
+    transition: all 0.3s ease;
+}
+
+.karma-graph-ui:hover {
+    border-color: rgba(0, 255, 100, 0.6);
+    box-shadow: 0 0 30px rgba(0, 255, 100, 0.2);
+}
+
+.karma-graph-header {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.karma-graph-footer {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    text-align: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 255, 100, 0.2);
+}
+
+.si-label {
+    color: var(--muted-color);
+}
+
+.si-value {
+    color: var(--accent-color);
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+#karma-canvas {
+    display: block;
+}
+
+/* S.I. Obedience Level Indicators */
+.si-value.low { color: #ff6b6b; text-shadow: 0 0 5px #ff6b6b; }
+.si-value.mid { color: #f7dc6f; text-shadow: 0 0 5px #f7dc6f; }
+.si-value.high { color: #82e0aa; text-shadow: 0 0 5px #82e0aa; }
+.si-value.max { color: var(--accent-color); text-shadow: 0 0 10px var(--accent-color); }
