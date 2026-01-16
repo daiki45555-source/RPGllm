@@ -189,23 +189,48 @@ class LocationManager {
         // ロケーションUIコンテナ
         this.container = document.createElement('div');
         this.container.id = 'location-ui';
-        this.container.className = 'location-ui hidden';
+        this.container.className = 'location-ui hidden collapsed';
+        this.isExpanded = false;
+        
         this.container.innerHTML = `
-            <div class="location-header">
+            <div class="location-header" id="location-header-toggle">
+                <div class="location-info">
+                    <span class="location-icon">🪶</span>
+                    <span id="current-location-name">鴉の巣・メインホール</span>
+                </div>
                 <div class="location-time">
                     <span id="game-day">1日目</span>
                     <span id="game-hour">08:00</span>
                 </div>
-                <div class="location-name" id="current-location-name">鴉の巣・メインホール</div>
+                <div class="location-toggle-arrow" id="toggle-arrow">▲</div>
             </div>
-            <div class="location-actions" id="location-actions">
-                <!-- 動的に生成 -->
-            </div>
-            <div class="location-destinations" id="location-destinations">
-                <!-- 移動先リスト -->
+            <div class="location-body" id="location-body">
+                <div class="location-actions" id="location-actions">
+                    <!-- 動的に生成 -->
+                </div>
+                <div class="location-destinations" id="location-destinations">
+                    <!-- 移動先リスト -->
+                </div>
             </div>
         `;
         document.body.appendChild(this.container);
+        
+        // 折りたたみトグル
+        const header = document.getElementById('location-header-toggle');
+        header.addEventListener('click', () => this.toggleExpand());
+    }
+
+    toggleExpand() {
+        this.isExpanded = !this.isExpanded;
+        const arrow = document.getElementById('toggle-arrow');
+        
+        if (this.isExpanded) {
+            this.container.classList.remove('collapsed');
+            arrow.textContent = '▼';
+        } else {
+            this.container.classList.add('collapsed');
+            arrow.textContent = '▲';
+        }
     }
 
     updateUI() {

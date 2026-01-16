@@ -1386,3 +1386,123 @@ body.crt-mode::before {
     50% { text-shadow: 0 0 15px rgba(255, 50, 50, 0.8); }
 }
 
+/* ========================================
+   折りたたみ式ロケーションUI
+   ======================================== */
+
+.location-ui.collapsed .location-body {
+    display: none;
+}
+
+.location-ui.collapsed {
+    padding: 0.5rem 2rem;
+}
+
+.location-ui.collapsed .location-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.location-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.location-header:hover {
+    background: rgba(139, 90, 43, 0.1);
+    border-radius: 4px;
+}
+
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.location-icon {
+    font-size: 1.2rem;
+}
+
+#current-location-name {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: #f0e6d2;
+}
+
+.location-toggle-arrow {
+    color: rgba(139, 90, 43, 0.8);
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.location-body {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   カルマグラフ強調表示
+   ======================================== */
+
+#karma-canvas {
+    filter: drop-shadow(0 0 10px rgba(0, 255, 170, 0.3));
+}
+
+#karma-canvas-mini {
+    filter: drop-shadow(0 0 8px rgba(0, 255, 170, 0.4));
+}
+
+/* Vital Status 左上パネル強調 */
+.vital-status {
+    background: linear-gradient(135deg, 
+        rgba(30, 25, 20, 0.95), 
+        rgba(20, 15, 10, 0.98)) !important;
+    border: 1px solid rgba(139, 90, 43, 0.6) !important;
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ミニカルマグラフ強調 */
+.mini-karma-container {
+    background: rgba(10, 10, 10, 0.6);
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 10px;
+    border: 1px solid rgba(139, 90, 43, 0.4);
+}
+
+#karma-canvas-mini {
+    width: 100px !important;
+    height: 100px !important;
+}
+
+/* 6角形の輪郭を強調 */
+.karma-graph-container {
+    position: relative;
+}
+
+.karma-graph-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    border: 1px solid rgba(139, 90, 43, 0.3);
+    border-radius: 50%;
+    pointer-events: none;
+}
+

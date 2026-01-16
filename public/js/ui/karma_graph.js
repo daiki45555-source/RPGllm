@@ -106,17 +106,26 @@ class KarmaGraph {
         // クリア
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // 背景グリッド（10段階）
-        ctx.strokeStyle = 'rgba(0, 255, 100, 0.1)';
+        // 背景グリッド（10段階）- 強調表示
+        ctx.strokeStyle = 'rgba(0, 255, 100, 0.25)';
         ctx.lineWidth = 1;
         
         for (let level = 1; level <= this.maxMeters; level++) {
             const levelRadius = (radius / this.maxMeters) * level;
+            // 5と10の段階はより濃く
+            if (level === 5 || level === 10) {
+                ctx.strokeStyle = 'rgba(0, 255, 100, 0.5)';
+                ctx.lineWidth = 2;
+            } else {
+                ctx.strokeStyle = 'rgba(0, 255, 100, 0.25)';
+                ctx.lineWidth = 1;
+            }
             this.drawHexagon(centerX, centerY, levelRadius, false);
         }
         
-        // 軸線
-        ctx.strokeStyle = 'rgba(0, 255, 100, 0.3)';
+        // 軸線（強調）
+        ctx.strokeStyle = 'rgba(0, 255, 100, 0.5)';
+        ctx.lineWidth = 1;
         this.axes.forEach((axis, i) => {
             const angle = (Math.PI * 2 / this.axes.length) * i - Math.PI / 2;
             const x = centerX + Math.cos(angle) * radius;
