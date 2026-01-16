@@ -56,9 +56,10 @@ class UIManager {
                 this.textElement.textContent += text.charAt(i);
                 
                 // 5文字ごとにタイプライター音（負荷軽減）
-                if (i % 5 === 0 && window.audioManager) {
-                    window.audioManager.playSE('typewriter', 0.15); // 15%音量
-                }
+                // TODO: 単音のタイプライター音を取得後に有効化
+                // if (i % 5 === 0 && window.audioManager) {
+                //     window.audioManager.playSE('typewriter', 0.15); // 15%音量
+                // }
                 
                 i++;
                 setTimeout(typeNext, speed);
