@@ -1,6 +1,14 @@
 /**
  * KarmaGraph.js - 6角形レーダーチャートでカルマを表示
  * カルマポイント20ごとに1メーター上昇、最大10メーター（200pt）
+ * 
+ * 6つのカルマ軸:
+ * - Integrity (誠実) - 嘘をつかない、約束を守る、ルールに従う
+ * - Kindness (慈悲) - 他者を傷つけない、救済を選ぶ、自己犠牲
+ * - Justice (正義) - 悪を許さない、多数のために少数を切る
+ * - Bravery (勇気) - リスクを恐れない、前に出る
+ * - Perseverance (執念) - 手段を選ばず生き残る、合理的判断
+ * - Patience (忍耐) - 快楽に流されない、耐え忍ぶ
  */
 
 class KarmaGraph {
@@ -12,22 +20,22 @@ class KarmaGraph {
         }
         this.ctx = this.canvas.getContext('2d');
         
-        // 6つのカルマ軸
+        // 6つのカルマ軸（資料に基づく）
         this.axes = [
-            { id: 'vigor', name: '生命力', color: '#ff6b6b' },      // 赤
-            { id: 'attunement', name: '集中力', color: '#4ecdc4' }, // シアン
-            { id: 'intelligence', name: '理力', color: '#45b7d1' }, // 青
-            { id: 'faith', name: '信仰', color: '#f7dc6f' },        // 黄
-            { id: 'endurance', name: '持久力', color: '#82e0aa' },  // 緑
-            { id: 'luck', name: '運', color: '#bb8fce' }            // 紫
+            { id: 'integrity', name: '誠実', nameEn: 'Integrity', color: '#4ecdc4' },      // シアン
+            { id: 'kindness', name: '慈悲', nameEn: 'Kindness', color: '#ff6b9d' },        // ピンク
+            { id: 'justice', name: '正義', nameEn: 'Justice', color: '#f7dc6f' },          // 黄
+            { id: 'bravery', name: '勇気', nameEn: 'Bravery', color: '#ff6b6b' },          // 赤
+            { id: 'perseverance', name: '執念', nameEn: 'Perseverance', color: '#82e0aa' }, // 緑
+            { id: 'patience', name: '忍耐', nameEn: 'Patience', color: '#bb8fce' }          // 紫
         ];
         
-        // カルマ値（0-200の範囲、20ごとに1メーター）
+        // カルマ値（生の値を保持、マイナスもあり得る）
         this.karma = {};
         this.axes.forEach(axis => this.karma[axis.id] = 0);
         
         // 設定
-        this.maxValue = 200;  // 最大値（10メーター x 20pt）
+        this.maxValue = 200;  // 表示上の最大値（10メーター x 20pt）
         this.meterSize = 20;  // 1メーター = 20pt
         this.maxMeters = 10;  // 最大10メーター
         
@@ -36,18 +44,19 @@ class KarmaGraph {
         this.centerY = this.canvas.height / 2;
         this.radius = Math.min(this.centerX, this.centerY) - 30;
         
-        // アニメーション用
+        // アニメーション用（表示用の値）
         this.animationProgress = {};
         this.axes.forEach(axis => this.animationProgress[axis.id] = 0);
         
         this.draw();
     }
     
-    // カルマ値を設定（0-200）
+    // カルマ値を設定（生の値）
     setKarma(id, value) {
-        const clampedValue = Math.max(0, Math.min(this.maxValue, value));
-        this.karma[id] = clampedValue;
-        this.animateTo(id, clampedValue);
+        this.karma[id] = value;
+        // 表示用には0以上に制限
+        const displayValue = Math.max(0, Math.min(this.maxValue, value));
+        this.animateTo(id, displayValue);
     }
     
     // カルマ値を増減
@@ -56,9 +65,9 @@ class KarmaGraph {
         this.setKarma(id, newValue);
     }
     
-    // ポイントからメーター変換
+    // ポイントからメーター変換（0以上）
     pointsToMeters(points) {
-        return Math.floor(points / this.meterSize);
+        return Math.max(0, Math.floor(points / this.meterSize));
     }
     
     // アニメーション付きで値を更新
@@ -178,7 +187,6 @@ class KarmaGraph {
         
         // ラベル
         ctx.font = '10px "Share Tech Mono", monospace';
-        ctx.fillStyle = 'rgba(0, 255, 100, 0.9)';
         ctx.textAlign = 'center';
         
         this.axes.forEach((axis, i) => {
@@ -187,9 +195,15 @@ class KarmaGraph {
             const x = centerX + Math.cos(angle) * labelRadius;
             const y = centerY + Math.sin(angle) * labelRadius;
             
-            const meters = this.pointsToMeters(this.karma[axis.id] || 0);
+            const meters = this.pointsToMeters(Math.max(0, this.karma[axis.id] || 0));
+            
+            // カルマ名
+            ctx.fillStyle = axis.color;
             ctx.fillText(`${axis.name}`, x, y);
-            ctx.fillText(`${meters}/10`, x, y + 12);
+            
+            // メーター表示
+            ctx.fillStyle = 'rgba(0, 255, 100, 0.7)';
+            ctx.fillText(`${meters}`, x, y + 12);
         });
     }
     
@@ -223,16 +237,24 @@ class KarmaGraph {
     initFromEvaluation(karmaResult) {
         if (!karmaResult) return;
         
-        // ShadowEvaluationの結果を反映（初期値として設定）
+        // ShadowEvaluationの結果を反映
+        // 診断結果はそのままの値（プラスマイナスあり）を保持
         Object.keys(karmaResult).forEach(key => {
-            if (this.karma.hasOwnProperty(key)) {
-                // 診断結果は0-10程度なので、メーターに換算（x20）
-                this.setKarma(key, karmaResult[key] * 20);
+            // 6つの主要カルマのみ表示（隠しカルマは非表示）
+            const isMainKarma = this.axes.some(axis => axis.id === key);
+            if (isMainKarma) {
+                // 生の値を保存（マイナスもあり得る）
+                this.karma[key] = karmaResult[key] || 0;
+                // 表示用には0以上に制限
+                const displayValue = Math.max(0, this.karma[key]);
+                this.animateTo(key, displayValue);
             }
         });
+        
+        console.log('Karma initialized from evaluation:', this.karma);
     }
     
-    // 現在のカルマ値を取得
+    // 現在のカルマ値を取得（生の値）
     getKarma() {
         return { ...this.karma };
     }
@@ -241,7 +263,7 @@ class KarmaGraph {
     getMeters() {
         const meters = {};
         this.axes.forEach(axis => {
-            meters[axis.id] = this.pointsToMeters(this.karma[axis.id] || 0);
+            meters[axis.id] = this.pointsToMeters(Math.max(0, this.karma[axis.id] || 0));
         });
         return meters;
     }
@@ -251,6 +273,22 @@ class KarmaGraph {
         const meters = this.getMeters();
         const total = Object.values(meters).reduce((sum, m) => sum + m, 0);
         return total / this.axes.length;
+    }
+    
+    // 最も高いカルマを取得（S.I.システムで使用）
+    getDominantKarma() {
+        let maxValue = -Infinity;
+        let dominant = null;
+        
+        this.axes.forEach(axis => {
+            const value = this.karma[axis.id] || 0;
+            if (value > maxValue) {
+                maxValue = value;
+                dominant = axis;
+            }
+        });
+        
+        return dominant;
     }
     
     // 表示/非表示
