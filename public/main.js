@@ -265,10 +265,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (i < text.length) {
                     element.innerHTML += text.charAt(i);
-                    // 3文字ごとにタイプライターSE再生（音量控えめ）
-                    if (i % 3 === 0 && window.audioManager) {
-                        window.audioManager.playSE('typewriter', 0.3);
-                    }
+                    // 3文字ごとにタイプライターSE再生（一時無効化 - 単音SE待ち）
+                    // if (i % 3 === 0 && window.audioManager) {
+                    //     window.audioManager.playSE('typewriter', 0.3);
+                    // }
                     i++;
                 } else {
                     clearInterval(timer);
