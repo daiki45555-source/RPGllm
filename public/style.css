@@ -1224,3 +1224,165 @@ body.crt-mode::before {
     color: var(--accent-color);
     font-weight: bold;
 }
+
+/* ========================================
+   Location UI System
+   ======================================== */
+
+.location-ui {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(10, 10, 10, 0.95), rgba(10, 10, 10, 0.7));
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    z-index: 100;
+    border-top: 1px solid rgba(139, 90, 43, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.location-ui.hidden {
+    transform: translateY(100%);
+}
+
+.location-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(139, 90, 43, 0.3);
+}
+
+.location-time {
+    font-family: var(--font-mono);
+    color: var(--accent-color);
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+#game-day {
+    color: #c9a227;
+}
+
+#game-hour {
+    color: var(--accent-color);
+}
+
+.location-name {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    color: #f0e6d2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.location-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-location-action {
+    background: linear-gradient(135deg, rgba(60, 40, 20, 0.8), rgba(40, 25, 10, 0.9));
+    border: 1px solid rgba(139, 90, 43, 0.6);
+    color: #f0e6d2;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-location-action:hover {
+    background: linear-gradient(135deg, rgba(80, 50, 25, 0.9), rgba(60, 35, 15, 1));
+    border-color: #c9a227;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-location-action.btn-rest {
+    background: linear-gradient(135deg, rgba(20, 60, 40, 0.8), rgba(10, 40, 25, 0.9));
+    border-color: rgba(0, 200, 100, 0.5);
+}
+
+.btn-location-action.btn-rest:hover {
+    border-color: var(--accent-color);
+}
+
+.location-destinations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.location-destinations h4 {
+    font-family: var(--font-serif);
+    color: rgba(139, 90, 43, 0.8);
+    font-size: 0.8rem;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-location-move {
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(139, 90, 43, 0.4);
+    color: #f0e6d2;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-serif);
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.btn-location-move:hover {
+    background: rgba(60, 40, 20, 0.7);
+    border-color: #c9a227;
+    transform: translateX(5px);
+}
+
+.btn-location-move .dest-name {
+    font-size: 0.95rem;
+}
+
+.btn-location-move .dest-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: rgba(200, 180, 140, 0.7);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+
+/* 夜間表示 */
+.location-ui.night-mode {
+    background: linear-gradient(to top, rgba(5, 5, 15, 0.95), rgba(5, 5, 15, 0.7));
+    border-top-color: rgba(80, 60, 120, 0.5);
+}
+
+.location-ui.night-mode .location-time {
+    color: #8080ff;
+}
+
+.location-ui.night-mode #game-hour {
+    color: #aaaaff;
+}
+
+/* 危険地帯表示 */
+.location-ui.danger-zone .location-name {
+    color: #ff6666;
+    animation: danger-pulse 2s infinite;
+}
+
+@keyframes danger-pulse {
+    0%, 100% { text-shadow: 0 0 5px rgba(255, 50, 50, 0.5); }
+    50% { text-shadow: 0 0 15px rgba(255, 50, 50, 0.8); }
+}
+
