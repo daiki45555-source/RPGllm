@@ -151,6 +151,15 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("VitalGauge class not found.");
   }
 
+  // Initialize Inventory
+  if (window.inventory) {
+    log("Initializing Inventory...");
+    window.inventory.init();
+    log("Inventory initialized.");
+  } else {
+    console.warn("Inventory class not found.");
+  }
+
   // State
   let isAutoProgression = true;
   let isSkipping = false;
@@ -226,6 +235,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Main menu option button
     btnOption.addEventListener("click", () => {
       if (window.settingsManager) window.settingsManager.open();
+      if (elements.audioManager) elements.audioManager.playSE("click");
+    });
+  }
+
+  // Inventory Button
+  const btnInventory = document.getElementById("btn-inventory");
+  if (btnInventory) {
+    btnInventory.addEventListener("click", () => {
+      if (window.inventory) {
+        window.inventory.toggle();
+      }
       if (elements.audioManager) elements.audioManager.playSE("click");
     });
   }

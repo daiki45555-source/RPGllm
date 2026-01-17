@@ -264,4 +264,27 @@ window.introEvents.rank1.routes.route_ask.push(...commonContinuation);
 window.introEvents.rank1.onComplete = () => {
   localStorage.setItem("prologue_complete", "true");
   console.log("Prologue Complete! Guild unlocked.");
+  
+  // 初期装備・アイテムを付与
+  if (window.inventory) {
+    // 初期装備
+    window.inventory.addItem('rusty_shortsword', 1);  // 錆びたショートソード
+    window.inventory.addItem('ragged_clothes', 1);    // ぼろぼろの服
+    // 初期アイテム
+    window.inventory.addItem('bread_crust', 3);       // パンの屑×3
+    window.inventory.addItem('dirty_water', 2);       // 泥水×2
+    console.log("[Inventory] 初期装備・アイテム付与完了");
+  }
+  
+  // 初期所持金（1000M）
+  if (window.gameState) {
+    window.gameState.money = (window.gameState.money || 0) + 1000;
+    console.log("[System] 1000M を獲得");
+  }
+  
+  // LocationManager表示（探索フェーズ開始）
+  if (window.locationManager) {
+    window.locationManager.show();
+    window.locationManager.updateUI();
+  }
 };
