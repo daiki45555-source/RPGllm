@@ -2368,3 +2368,252 @@ body.crt-mode::before {
     text-align: center;
 }
 
+/* ============================= */
+/* ヘッダーUI改善 - 豪華なデザイン */
+/* ============================= */
+
+.system-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100; /* イベントオーバーレイ(1000)より上 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 15, 0.9) 100%);
+    border-bottom: 2px solid rgba(0, 255, 170, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* コマンドモジュール全体 */
+.command-module {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 255, 170, 0.2);
+    border-radius: 8px;
+}
+
+.cmd-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cmd-separator {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 5px;
+}
+
+.header-label {
+    font-size: 0.7rem;
+    color: #00ffaa;
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+}
+
+/* システムナビゲーション */
+.system-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ============================= */
+/* コンソールボタン - 豪華版 */
+/* ============================= */
+.btn-console {
+    position: relative;
+    padding: 10px 18px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(40, 40, 60, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%);
+    border: 2px solid rgba(0, 255, 170, 0.4);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 8px rgba(0, 255, 170, 0.5);
+    box-shadow: 
+        0 0 10px rgba(0, 255, 170, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 80px;
+    text-align: center;
+}
+
+.btn-console:hover {
+    background: linear-gradient(135deg, rgba(60, 60, 80, 0.95) 0%, rgba(30, 30, 50, 1) 100%);
+    border-color: rgba(0, 255, 170, 0.8);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 170, 0.3),
+        0 0 40px rgba(0, 255, 170, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-console:active {
+    transform: translateY(0);
+    box-shadow: 
+        0 0 10px rgba(0, 255, 170, 0.2),
+        inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* スキップボタン専用 */
+#btn-skip {
+    position: relative;
+}
+
+#btn-skip .state-text {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    margin-left: 4px;
+}
+
+#btn-skip.active {
+    background: linear-gradient(135deg, rgba(255, 100, 100, 0.3) 0%, rgba(255, 50, 50, 0.2) 100%);
+    border-color: rgba(255, 100, 100, 0.6);
+    animation: skipPulse 1s infinite;
+}
+
+@keyframes skipPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 100, 100, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(255, 100, 100, 0.5); }
+}
+
+/* オートモード切替 */
+.toggle-switch.small {
+    width: 36px;
+    height: 18px;
+}
+
+.toggle-switch.small .slider {
+    border-radius: 9px;
+}
+
+.toggle-switch.small .slider:before {
+    width: 14px;
+    height: 14px;
+    left: 2px;
+    bottom: 2px;
+}
+
+.toggle-switch.small input:checked + .slider:before {
+    transform: translateX(18px);
+}
+
+/* ============================= */
+/* カルマグラフ - z-index修正 */
+/* ============================= */
+#karma-graph-container {
+    z-index: 1100 !important; /* イベントオーバーレイより上 */
+}
+
+/* ============================= */
+/* イベントオーバーレイ */
+/* ============================= */
+#event-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+#event-overlay.hidden {
+    display: none;
+}
+
+#event-overlay.visible {
+    display: block;
+}
+
+#event-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.event-content {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.dialogue-box {
+    background: linear-gradient(180deg, rgba(10, 10, 20, 0.9) 0%, rgba(5, 5, 15, 0.95) 100%);
+    border-top: 2px solid rgba(0, 255, 170, 0.3);
+    padding: 20px 30px;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.speaker-name {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00ffaa;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+.dialogue-text {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #e0e0e0;
+}
+
+.character-display {
+    position: absolute;
+    bottom: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.character-display img {
+    max-height: 60vh;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
+}
+
+#event-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+}
+
+.event-choice-btn {
+    padding: 15px 25px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, rgba(40, 40, 60, 0.9) 0%, rgba(20, 20, 35, 0.95) 100%);
+    border: 2px solid rgba(0, 255, 170, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.event-choice-btn:hover {
+    background: linear-gradient(135deg, rgba(60, 60, 80, 0.95) 0%, rgba(30, 30, 50, 1) 100%);
+    border-color: rgba(0, 255, 170, 0.8);
+    transform: translateX(10px);
+    box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
+}

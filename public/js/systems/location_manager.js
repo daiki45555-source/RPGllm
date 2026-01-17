@@ -63,7 +63,7 @@ class LocationManager {
         type: "street",
         features: ["通行人", "情報収集"],
         connections: [
-          "crows_nest_hall",
+          "base_hall", // Fixed: crows_nest_hall -> base_hall
           "lower_market",
           "lower_alley",
           "emperor_plaza",
