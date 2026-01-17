@@ -36,9 +36,9 @@ class BattleSystem {
 
         this.addLog(`${enemyData.name}${count > 1 ? ` × ${count}` : ''} が現れた！`);
 
-        // 戦闘BGMを再生
-        if (typeof SoundGenerator !== 'undefined') {
-            SoundGenerator.playBGM('通常バトルBGM');
+        // 戦闘BGMを再生（AudioManagerがあれば使用）
+        if (typeof AudioManager !== 'undefined' && AudioManager.playBGM) {
+            AudioManager.playBGM('battle');
         }
 
         // 戦闘UIを表示
@@ -382,8 +382,8 @@ class BattleSystem {
         this._defeatedEnemies = [];
 
         // BGM停止
-        if (typeof SoundGenerator !== 'undefined') {
-            SoundGenerator.stopBGM();
+        if (typeof AudioManager !== 'undefined' && AudioManager.stopBGM) {
+            AudioManager.stopBGM();
         }
 
         // 戦闘UI非表示

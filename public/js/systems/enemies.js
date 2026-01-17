@@ -20,7 +20,7 @@ const ENEMIES = {
             spd: 12
         },
         type: 'monster',
-        image: 'エネミー/ゴブリン.png',
+        image: 'images/enemies/ゴブリン.png',
         drops: [
             { item: 'goblin_fang', name: 'ゴブリンの牙', chance: 50, price: 10 },
             { item: 'herb', name: '傷薬', chance: 10, price: 50 }
@@ -49,7 +49,7 @@ const ENEMIES = {
             spd: 18
         },
         type: 'monster',
-        image: 'エネミー/ポイズンラット.png',
+        image: 'images/enemies/ポイズンラット.png',
         drops: [
             { item: 'poison_sac', name: '毒袋', chance: 30, price: 30 },
             { item: 'antidote', name: '解毒薬', chance: 5, price: 100 }
@@ -82,7 +82,7 @@ const ENEMIES = {
             spd: 10
         },
         type: 'human',
-        image: 'エネミー/暴漢1.png',
+        image: 'images/enemies/暴漢1.png',
         drops: [
             { item: 'stolen_goods', name: '盗品', chance: 40, price: 50 },
             { item: 'throwing_knife', name: '投げナイフ', chance: 20, price: 30 }
@@ -113,7 +113,7 @@ const ENEMIES = {
             spd: 14
         },
         type: 'human',
-        image: 'エネミー/暴漢2.png',
+        image: 'images/enemies/暴漢2.png',
         drops: [
             { item: 'stolen_goods', name: '盗品', chance: 40, price: 50 },
             { item: 'throwing_knife_x3', name: '投げナイフ×3', chance: 30, price: 90 }
