@@ -50,12 +50,19 @@ class BattleSystem {
      * プレイヤーの攻撃
      * @param {number} targetIndex - 攻撃対象のインデックス
      */
-    playerAttack(targetIndex = 0) {
-        if (!this.inBattle || targetIndex >= this.enemies.length) return;
+    playerAttack(targetIndex = null) {
+        if (!this.inBattle) return;
+        
+        // targetIndexが指定されていない場合は選択中のターゲットを使用
+        const idx = targetIndex !== null ? targetIndex : this.selectedTargetIndex;
+        if (idx >= this.enemies.length) return;
 
-        const target = this.enemies[targetIndex];
+        const target = this.enemies[idx];
         const player = window.gameState?.player;
         if (!player) return;
+
+        // 攻撃SE
+        if (window.audioManager) window.audioManager.playSE('attack');
 
         // ダメージ計算
         const damage = this.calculateDamage(player, target);
@@ -72,22 +79,30 @@ class BattleSystem {
         // ログ追加
         let logMsg = `${target.name}に ${totalDamage} ダメージ！`;
         if (isCritical) logMsg = `クリティカル！ ` + logMsg;
-        if (karmaBonus > 0) logMsg += `（カルマ補正 +${karmaBonus}%）`;
         this.addLog(logMsg);
 
         // 敵が倒れたかチェック
         if (target.stats.hp <= 0) {
+            if (window.audioManager) window.audioManager.playSE('enemy_death');
             this.addLog(`${target.name}を倒した！`);
-            this.enemies.splice(targetIndex, 1);
+            this._defeatedEnemies = this._defeatedEnemies || [];
+            this._defeatedEnemies.push(target);
+            this.enemies.splice(idx, 1);
 
             if (this.enemies.length === 0) {
                 this.victory();
                 return;
             }
+            
+            // ターゲットをリセット
+            this.selectedTargetIndex = 0;
         }
 
+        // 敵のターンに進む前にUI更新
+        this.updateBattleUI();
+
         // 敵のターン
-        this.enemyTurn();
+        setTimeout(() => this.enemyTurn(), 800);
     }
 
     /**
@@ -161,14 +176,15 @@ class BattleSystem {
             if (action === 'attack') {
                 const damage = this.calculateDamage(enemy.stats, player);
                 
+                // ダメージSE
+                if (window.audioManager) window.audioManager.playSE('damage');
+
                 // 慈悲カルマで被ダメージ軽減
                 let damageReduction = 0;
                 if (typeof KarmaSystem !== 'undefined') {
                     const kindness = KarmaSystem.getKarmaValue('kindness') || 0;
                     damageReduction = Math.floor(damage * (kindness * 0.5 / 100));
                 }
-
-                // 忍耐カルマで状態異常耐性（ここでは未実装）
 
                 const finalDamage = Math.max(1, damage - damageReduction);
                 player.hp = Math.max(0, player.hp - finalDamage);
@@ -386,9 +402,12 @@ class BattleSystem {
         // 戦闘UI非表示
         this.hideBattleUI();
 
-        // 勝利の場合、フィールドBGMに戻す
-        if (isVictory) {
-            // TODO: 現在のエリアに応じたBGMを再生
+        // フィールドBGMに戻す
+        if (window.locationManager) {
+            const loc = window.locationManager.locations[window.locationManager.currentLocation];
+            if (loc) {
+                window.locationManager.updateBGM(loc);
+            }
         }
     }
 
@@ -435,7 +454,9 @@ class BattleSystem {
             <div class="battle-container">
                 <div class="battle-enemies">
                     ${this.enemies.map((e, i) => `
-                        <div class="enemy-card" data-index="${i}">
+                        <div class="enemy-card ${this.selectedTargetIndex === i ? 'selected' : ''}" 
+                             onclick="battleSystem.selectedTargetIndex = ${i}; battleSystem.updateBattleUI();"
+                             data-index="${i}">
                             <img src="${e.image}" alt="${e.name}" onerror="this.style.display='none'">
                             <div class="enemy-info">
                                 <div class="enemy-name">${e.name}</div>
@@ -455,7 +476,7 @@ class BattleSystem {
                 </div>
 
                 <div class="battle-actions">
-                    <button class="battle-btn attack-btn" onclick="battleSystem.playerAttack(0)">
+                    <button class="battle-btn attack-btn" onclick="battleSystem.playerAttack()">
                         ⚔️ 攻撃
                     </button>
                     <button class="battle-btn escape-btn" onclick="battleSystem.attemptEscape()">
@@ -495,20 +516,23 @@ class BattleSystem {
         }
     }
 
+    constructor() {
+        this.inBattle = false;
+        this.enemies = [];
+        this._defeatedEnemies = [];
+        this.turn = 0;
+        this.battleLog = [];
+        this.escapeAttempts = 0;
+        this.selectedTargetIndex = 0;
+        this.battleBGM = null;
+    }
+
     /**
      * 戦闘BGM再生
      */
     playBattleBGM() {
-        // 既存のBGMがあれば停止
-        this.stopBattleBGM();
-        
-        try {
-            this.battleBGM = new Audio('BGM/通常バトルBGM.mp3');
-            this.battleBGM.loop = true;
-            this.battleBGM.volume = 0.5;
-            this.battleBGM.play().catch(e => console.log('[Battle] BGM再生失敗:', e));
-        } catch (e) {
-            console.log('[Battle] BGM初期化失敗:', e);
+        if (window.audioManager) {
+            window.audioManager.playBGM('./BGM/通常バトルBGM.mp3');
         }
     }
 
@@ -516,10 +540,8 @@ class BattleSystem {
      * 戦闘BGM停止
      */
     stopBattleBGM() {
-        if (this.battleBGM) {
-            this.battleBGM.pause();
-            this.battleBGM.currentTime = 0;
-            this.battleBGM = null;
+        if (window.audioManager) {
+            window.audioManager.stopBGM();
         }
     }
 }

@@ -8,19 +8,27 @@ class LocationManager {
         // ロケーション定義
         this.locations = {
             // === 鴉の巣（拠点） ===
-            'crows_nest_hall': {
-                id: 'crows_nest_hall',
+            'base_hall': {
+                id: 'base_hall', // Changed from crows_nest_hall
                 name: '鴉の巣・メインホール',
                 nameJP: '鴉の巣　メインホール',
-                bg: './images/bg/冒険者ギルド　鴉の巣　メインホール.png',
+                bg: './images/bg/冒険者ギルド　鴉の巣　メインホール.png', // Keeping original bg for now, as new 'background' property is different
                 type: 'guild',
                 features: ['クエスト受注', '情報収集', 'クロウとの会話'],
-                connections: ['crows_nest_room', 'lower_main_street'],
+                connections: ['crows_nest_room', 'lower_main_street'], // Keeping original connections for now, as new 'destinations' property is different
                 travelTime: 0,
                 encounterRate: 0,
                 shopType: null,
+                bgm: './BGM/鴉の巣 基本BGM.mp3', // Added explicit BGM
                 bgmDay: './BGM/鴉の巣 基本BGM.mp3',
-                bgmNight: './BGM/鴉の巣 基本BGM.mp3'
+                bgmNight: './BGM/鴉の巣 夜間BGM.mp3', // Updated night BGM
+                // New properties from the instruction, integrated carefully
+                background: './images/locations/base_hall.jpg', // New background property
+                destinations: ['lower_main', 'market', 'back_alley'], // New destinations property
+                actions: [
+                    { id: 'rest', name: '休息する', icon: '💤', condition: (gs) => gs.player.hp < gs.player.maxHp },
+                    { id: 'save', name: '記録する', icon: '📖' }
+                ]
             },
             'crows_nest_room': {
                 id: 'crows_nest_room',
@@ -28,7 +36,7 @@ class LocationManager {
                 nameJP: '鴉の巣　宿部屋',
                 bg: './images/bg/鴉の巣　宿部屋.png',
                 type: 'rest',
-                features: ['休息（HP/STM回復）', 'セーブ', '時間経過'],
+                features: ['休息（HP/STM回復）', 'セーブ', '時間経過', 'ベッドの下を調べる'],
                 connections: ['crows_nest_hall'],
                 travelTime: 0,
                 encounterRate: 0,
@@ -167,7 +175,7 @@ class LocationManager {
         };
 
         // 現在地
-        this.currentLocation = 'crows_nest_hall';
+        this.currentLocation = 'base_hall'; // 'crows_nest_hall'は存在しないためbase_hallに修正
         
         // ゲーム内時間（0-23時）
         this.gameHour = 8;
@@ -395,7 +403,6 @@ class LocationManager {
     doAction(action) {
         console.log(`[アクション] ${action}`);
         
-        // TODO: 各アクションの実装
         switch(action) {
             case 'クエスト受注':
                 // クエストボード表示
@@ -410,9 +417,123 @@ class LocationManager {
             case '高級品店':
                 // ショップシステム
                 break;
+            case 'ベッドの下を調べる':
+                this.searchUnderBed();
+                break;
+            case 'セーブ':
+                // セーブUI表示
+                if (window.saveManager) {
+                    window.saveManager.showSaveUI();
+                } else {
+                    console.warn('[セーブ] SaveManagerが初期化されていません');
+                }
+                break;
             default:
                 console.log(`アクション「${action}」は未実装`);
         }
+    }
+
+    /**
+     * 救済措置イベント: ベッドの下を調べる
+     */
+    searchUnderBed() {
+        // フラグ管理
+        if (!window.gameState) {
+            window.gameState = { flags: {} };
+        }
+        if (!window.gameState.flags) {
+            window.gameState.flags = {};
+        }
+        
+        // 既にイベント発動済み
+        if (window.gameState.flags.bed_search_event) {
+            this.showMessage('もう何もなさそうだ…');
+            console.log('[ベッド調査] イベント済み');
+            return;
+        }
+        
+        // 調査カウンター
+        if (!window.gameState.bedSearchCount) {
+            window.gameState.bedSearchCount = 0;
+        }
+        window.gameState.bedSearchCount++;
+        
+        const count = window.gameState.bedSearchCount;
+        console.log(`[ベッド調査] ${count}回目`);
+        
+        if (count === 1) {
+            this.showMessage('ベッドの下を調べた…何もない。');
+        } else if (count === 2) {
+            this.showMessage('やはり何もない…ホコリだらけだ。');
+        } else if (count >= 3) {
+            // 救済措置発動！
+            this.showMessage('ん？何か布に包まれた物が…');
+            this.grantStarterGear();
+            window.gameState.flags.bed_search_event = true;
+        }
+    }
+
+    /**
+     * 救済措置: Rank2装備一式を付与
+     */
+    grantStarterGear() {
+        const items = ['rusty_iron_sword', 'worn_shield', 'rental_chestpiece', 'worn_trousers'];
+        const names = [];
+        
+        items.forEach(itemId => {
+            if (window.inventory && typeof window.inventory.addItem === 'function') {
+                window.inventory.addItem(itemId);
+                const weapon = window.WEAPONS?.[itemId];
+                const armor = window.ARMOR?.[itemId];
+                if (weapon) names.push(weapon.name);
+                if (armor) names.push(armor.name);
+            }
+        });
+        
+        // SE再生
+        if (window.audioManager && typeof window.audioManager.playSE === 'function') {
+            window.audioManager.playSE('./SE/item_get.mp3');
+        }
+        
+        console.log('[救済措置] Rank2装備一式を入手:', names.join(', '));
+        
+        // メッセージ表示
+        setTimeout(() => {
+            this.showMessage(`誰かが置き忘れた装備一式を見つけた！\n${names.join('、')}`);
+        }, 1500);
+    }
+
+    /**
+     * 簡易メッセージ表示
+     */
+    showMessage(text) {
+        // 既存のメッセージがあれば削除
+        const existing = document.getElementById('location-message');
+        if (existing) existing.remove();
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.id = 'location-message';
+        msgDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 170, 0.5);
+            color: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            z-index: 9000;
+            text-align: center;
+            white-space: pre-line;
+            animation: fadeInOut 3s ease forwards;
+        `;
+        msgDiv.textContent = text;
+        document.body.appendChild(msgDiv);
+        
+        // 3秒後に消える
+        setTimeout(() => msgDiv.remove(), 3000);
     }
 
     show() {

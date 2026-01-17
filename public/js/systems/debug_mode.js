@@ -253,6 +253,27 @@ class DebugMode {
                     <button class="debug-btn" onclick="debugMode.testBattle('goblin')">ゴブリン戦</button>
                     <button class="debug-btn" onclick="debugMode.testBattle('thug_a')">暴漢戦</button>
                 </div>
+
+                <!-- フェーズスキップ -->
+                <div class="debug-section">
+                    <div class="debug-section-title">⏭️ フェーズスキップ</div>
+                    <select id="debug-phase-select" class="debug-select">
+                        <option value="title">タイトル画面</option>
+                        <option value="char_creation">キャラメイク</option>
+                        <option value="karma_test">カルマテスト</option>
+                        <option value="exploration" selected>探索フェーズ</option>
+                    </select>
+                    <button class="debug-btn" onclick="debugMode.skipToPhase()">スキップ</button>
+                </div>
+
+                <!-- セーブ/ロード -->
+                <div class="debug-section">
+                    <div class="debug-section-title">💾 セーブ/ロード</div>
+                    <button class="debug-btn" onclick="debugMode.quickSave()">クイックセーブ</button>
+                    <button class="debug-btn" onclick="debugMode.quickLoad()">クイックロード</button>
+                    <button class="debug-btn" onclick="debugMode.openSaveUI()">セーブUI</button>
+                    <button class="debug-btn" onclick="debugMode.openLoadUI()">ロードUI</button>
+                </div>
             </div>
         `;
     }
@@ -382,6 +403,92 @@ class DebugMode {
         if (enemyData) {
             enemyData.count = 1;
             battleSystem.startBattle(enemyData);
+        }
+    }
+
+    /**
+     * フェーズスキップ
+     */
+    skipToPhase() {
+        const select = document.getElementById('debug-phase-select');
+        if (!select) return;
+        
+        const phase = select.value;
+        console.log(`[DEBUG MODE] フェーズスキップ: ${phase}`);
+        
+        switch(phase) {
+            case 'title':
+                // タイトルに戻る
+                location.reload();
+                break;
+            case 'char_creation':
+                // キャラ作成画面へ
+                if (typeof showCharacterCreation === 'function') {
+                    showCharacterCreation();
+                }
+                break;
+            case 'karma_test':
+                // カルマテストへ
+                if (typeof startEvaluation === 'function') {
+                    startEvaluation();
+                }
+                break;
+            case 'exploration':
+                // 探索フェーズへ（LocationManager表示）
+                if (window.locationManager) {
+                    window.locationManager.show();
+                    window.locationManager.updateUI();
+                } else if (window.LocationManager) {
+                    window.locationManager = new window.LocationManager();
+                    window.locationManager.show();
+                }
+                break;
+        }
+    }
+
+    /**
+     * クイックセーブ（スロット0 = testplay）
+     */
+    quickSave() {
+        if (window.saveManager) {
+            window.saveManager.quickSave(0);
+            console.log('[DEBUG MODE] クイックセーブ完了');
+        } else {
+            console.warn('[DEBUG MODE] SaveManagerが見つかりません');
+        }
+    }
+
+    /**
+     * クイックロード（スロット0 = testplay）
+     */
+    quickLoad() {
+        if (window.saveManager) {
+            window.saveManager.quickLoad(0);
+            console.log('[DEBUG MODE] クイックロード完了');
+        } else {
+            console.warn('[DEBUG MODE] SaveManagerが見つかりません');
+        }
+    }
+
+    /**
+     * セーブUI表示
+     */
+    openSaveUI() {
+        if (window.saveManager) {
+            window.saveManager.showSaveUI();
+        } else {
+            console.warn('[DEBUG MODE] SaveManagerが見つかりません');
+        }
+    }
+
+    /**
+     * ロードUI表示
+     */
+    openLoadUI() {
+        if (window.saveManager) {
+            window.saveManager.showLoadUI();
+        } else {
+            console.warn('[DEBUG MODE] SaveManagerが見つかりません');
         }
     }
 }
