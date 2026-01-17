@@ -307,19 +307,23 @@ class LocationManager {
         // 時間経過
         this.advanceTime(dest.travelTime || 1);
         
-        // エンカウント判定
-        const encounterChance = this.isNight() ? 
-            (dest.encounterRateNight || dest.encounterRate) : 
-            dest.encounterRate;
+        // エンカウント判定（enemies.jsのSPAWN_TABLESと連携）
+        const isNight = this.isNight();
         
-        if (Math.random() < encounterChance && dest.encounterEnemies) {
-            // エンカウント発生
-            const enemy = dest.encounterEnemies[
-                Math.floor(Math.random() * dest.encounterEnemies.length)
-            ];
-            console.log(`[エンカウント] ${enemy}が現れた！`);
-            // TODO: 戦闘システム呼び出し
-            // await this.triggerBattle(enemy);
+        // 戦闘中でなければエンカウント判定
+        if (typeof battleSystem !== 'undefined' && !battleSystem.inBattle) {
+            if (typeof checkEncounter !== 'undefined' && checkEncounter(destinationId, isNight)) {
+                // 敵を抽選
+                const enemyData = typeof spawnEnemy !== 'undefined' ? spawnEnemy(destinationId, isNight) : null;
+                
+                if (enemyData) {
+                    console.log(`[エンカウント] ${enemyData.name}が現れた！`);
+                    
+                    // 戦闘開始
+                    battleSystem.startBattle(enemyData);
+                    return; // 戦闘中は移動を中断
+                }
+            }
         }
         
         // ランダムイベント判定
