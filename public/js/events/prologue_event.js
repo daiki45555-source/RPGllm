@@ -283,8 +283,14 @@ window.introEvents.rank1.onComplete = () => {
   }
   
   // LocationManager表示（探索フェーズ開始）
+  if (!window.locationManager && window.LocationManager) {
+    console.log("[LocationManager] インスタンス作成");
+    window.locationManager = new window.LocationManager();
+    window.locationManager.init();
+  }
   if (window.locationManager) {
     window.locationManager.show();
     window.locationManager.updateUI();
+    console.log("[LocationManager] 探索フェーズ開始");
   }
 };

@@ -539,6 +539,11 @@ class LocationManager {
     show() {
         if (this.container) {
             this.container.classList.remove('hidden');
+            // UIを展開状態にする
+            this.container.classList.remove('collapsed');
+            this.isExpanded = true;
+            const arrow = document.getElementById('toggle-arrow');
+            if (arrow) arrow.textContent = '▼';
             
             // 現在地のBGMを再生
             const loc = this.locations[this.currentLocation];
