@@ -182,16 +182,15 @@ class EventManager {
         if (!window.locationManager && window.LocationManager) {
             console.log("[EventManager] ロケーションシステムを初期化...");
             window.locationManager = new window.LocationManager();
-            
-            // 鴉の巣・宿部屋からスタート
+            // constructorでinit()が自動呼び出しされる
+        }
+        
+        if (window.locationManager) {
+            // 鴉の巣・宿部屋からスタート（プロローグ後）
             window.locationManager.currentLocation = 'crows_nest_room';
-            window.locationManager.init(); // UIを作成
-            window.locationManager.show(); // 表示
-            console.log("[EventManager] ロケーションUI表示完了");
-        } else if (window.locationManager) {
-            // 既に初期化済みの場合は表示のみ
             window.locationManager.show();
-            console.log("[EventManager] ロケーションUI表示完了（既存）");
+            window.locationManager.updateUI();
+            console.log("[EventManager] ロケーションUI表示完了");
         }
     }
 }
