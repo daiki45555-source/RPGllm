@@ -418,6 +418,12 @@ class LocationManager {
     show() {
         if (this.container) {
             this.container.classList.remove('hidden');
+            
+            // 現在地のBGMを再生
+            const loc = this.locations[this.currentLocation];
+            if (loc) {
+                this.updateBGM(loc);
+            }
         }
     }
 

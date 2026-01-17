@@ -138,20 +138,20 @@ const ENEMIES = {
 // ========================================
 
 const SPAWN_TABLES = {
-    lower_main: {
+    lower_main_street: {
         name: '下層メインストリート',
         encounterRate: 5,
         day: [
             { enemy: 'goblin', weight: 80 },
-            { enemy: 'wild_dog', weight: 20 }
+            { enemy: 'poison_rat', weight: 20 }
         ],
         night: [
             { enemy: 'goblin', weight: 60 },
-            { enemy: 'wild_dog', weight: 40 }
+            { enemy: 'poison_rat', weight: 40 }
         ]
     },
 
-    market: {
+    lower_market: {
         name: '市場',
         encounterRate: 2,
         day: [
@@ -163,7 +163,7 @@ const SPAWN_TABLES = {
         ]
     },
 
-    back_alley: {
+    lower_alley: {
         name: '裏路地',
         encounterRate: 25,
         encounterRateNight: 50,
@@ -187,17 +187,17 @@ const SPAWN_TABLES = {
         day: [
             { enemy: 'goblin', weight: 30 },
             { enemy: 'poison_rat', weight: 20 },
-            { enemy: 'slime', weight: 25 },
-            { enemy: 'wild_dog', weight: 15 },
-            { enemy: 'bandit', weight: 10 }
+            { enemy: 'thug_a', weight: 25 },
+            { enemy: 'thug_b', weight: 15 },
+            { enemy: 'goblin', weight: 10 }
         ],
         night: [
             { enemy: 'goblin', weight: 20 },
             { enemy: 'poison_rat', weight: 20 },
-            { enemy: 'slime', weight: 15 },
-            { enemy: 'wild_dog', weight: 20 },
-            { enemy: 'skeleton', weight: 15 },
-            { enemy: 'bandit', weight: 10 }
+            { enemy: 'thug_a', weight: 20 },
+            { enemy: 'thug_b', weight: 20 },
+            { enemy: 'goblin', weight: 10 },
+            { enemy: 'poison_rat', weight: 10 }
         ]
     }
 };
