@@ -392,3 +392,64 @@ const debugMode = new DebugMode();
 // グローバル登録
 window.debugMode = debugMode;
 window.DebugMode = DebugMode;
+
+// DOMContentLoadedでパスワード入力イベントを設定
+document.addEventListener('DOMContentLoaded', () => {
+    const debugPasswordInput = document.getElementById('debug-password');
+    const bootScreen = document.getElementById('boot-screen');
+    
+    if (debugPasswordInput) {
+        console.log('[DEBUG MODE] パスワード入力欄検出、イベント設定中...');
+        
+        debugPasswordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (debugMode.checkPassword(debugPasswordInput.value)) {
+                    console.log('[DEBUG MODE] パスワード認証成功！大器モード起動！');
+                    
+                    // BGM再生
+                    if (window.audioManager) {
+                        window.audioManager.playBGM('./BGM/title_theme.mp3');
+                    }
+                    
+                    // ブート画面を非表示
+                    if (bootScreen) {
+                        bootScreen.classList.add('hidden');
+                    }
+                    
+                    // デバッグモード有効化
+                    debugMode.activate();
+                    
+                    // プロローグスキップ → ロケーションマネージャー表示
+                    setTimeout(() => {
+                        if (window.LocationManager) {
+                            window.locationManager = new window.LocationManager();
+                            window.locationManager.init();
+                            window.locationManager.show();
+                            console.log('[DEBUG MODE] LocationManager起動完了');
+                        } else {
+                            console.warn('[DEBUG MODE] LocationManagerが見つかりません');
+                        }
+                    }, 100);
+                    
+                } else {
+                    console.log('[DEBUG MODE] パスワードが違います:', debugPasswordInput.value);
+                    debugPasswordInput.value = '';
+                    debugPasswordInput.style.borderColor = '#ff0000';
+                    setTimeout(() => {
+                        debugPasswordInput.style.borderColor = 'rgba(255, 153, 0, 0.3)';
+                    }, 500);
+                }
+            }
+        });
+        
+        // パスワード入力欄クリックでブート画面クリックを無効化
+        debugPasswordInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        console.log('[DEBUG MODE] イベント設定完了');
+    }
+});
