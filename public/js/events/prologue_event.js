@@ -286,11 +286,13 @@ window.introEvents.rank1.onComplete = () => {
   if (!window.locationManager && window.LocationManager) {
     console.log("[LocationManager] インスタンス作成");
     window.locationManager = new window.LocationManager();
-    window.locationManager.init();
+    // constructorでinit()が自動呼び出しされる
   }
   if (window.locationManager) {
+    // プロローグ完了後は宿部屋から開始
+    window.locationManager.currentLocation = 'crows_nest_room';
     window.locationManager.show();
     window.locationManager.updateUI();
-    console.log("[LocationManager] 探索フェーズ開始");
+    console.log("[LocationManager] 探索フェーズ開始 - 宿部屋");
   }
 };

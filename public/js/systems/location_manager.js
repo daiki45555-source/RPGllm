@@ -188,6 +188,11 @@ class LocationManager {
     }
 
     init() {
+        // 既に初期化されている場合はスキップ
+        if (this.container) {
+            console.log('[LocationManager] 既に初期化済み');
+            return;
+        }
         this.createUI();
         this.updateUI();
         console.log('[LocationManager] 初期化完了');
@@ -229,6 +234,7 @@ class LocationManager {
     }
 
     toggleExpand() {
+        console.log('[LocationManager] toggleExpand called, isExpanded:', this.isExpanded);
         this.isExpanded = !this.isExpanded;
         const arrow = document.getElementById('toggle-arrow');
         
@@ -239,6 +245,7 @@ class LocationManager {
             this.container.classList.add('collapsed');
             arrow.textContent = '▲';
         }
+        console.log('[LocationManager] toggleExpand done, isExpanded:', this.isExpanded);
     }
 
     updateUI() {

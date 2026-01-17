@@ -385,6 +385,12 @@ class Inventory {
      */
     setupKeyBindings() {
         document.addEventListener('keydown', (e) => {
+            // テキスト入力中は無視
+            const tagName = document.activeElement.tagName.toLowerCase();
+            if (tagName === 'input' || tagName === 'textarea') {
+                return;
+            }
+            
             if (e.key === 'i' || e.key === 'I') {
                 this.toggle();
             }
