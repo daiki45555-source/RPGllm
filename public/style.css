@@ -1517,7 +1517,7 @@ body.crt-mode::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.3); /* エリア背景が見える透過 */
     z-index: 2000;
     display: none;
 }

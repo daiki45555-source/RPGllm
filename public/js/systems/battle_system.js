@@ -10,6 +10,7 @@ class BattleSystem {
         this.turn = 0;
         this.battleLog = [];
         this.escapeAttempts = 0;
+        this.battleBGM = null; // 戦闘BGM用Audio要素
     }
 
     /**
@@ -36,10 +37,8 @@ class BattleSystem {
 
         this.addLog(`${enemyData.name}${count > 1 ? ` × ${count}` : ''} が現れた！`);
 
-        // 戦闘BGMを再生（AudioManagerがあれば使用）
-        if (typeof AudioManager !== 'undefined' && AudioManager.playBGM) {
-            AudioManager.playBGM('battle');
-        }
+        // 戦闘BGMを再生
+        this.playBattleBGM();
 
         // 戦闘UIを表示
         this.showBattleUI();
@@ -382,9 +381,7 @@ class BattleSystem {
         this._defeatedEnemies = [];
 
         // BGM停止
-        if (typeof AudioManager !== 'undefined' && AudioManager.stopBGM) {
-            AudioManager.stopBGM();
-        }
+        this.stopBattleBGM();
 
         // 戦闘UI非表示
         this.hideBattleUI();
@@ -495,6 +492,34 @@ class BattleSystem {
         const battleUI = document.getElementById('battle-ui');
         if (battleUI) {
             battleUI.style.display = 'none';
+        }
+    }
+
+    /**
+     * 戦闘BGM再生
+     */
+    playBattleBGM() {
+        // 既存のBGMがあれば停止
+        this.stopBattleBGM();
+        
+        try {
+            this.battleBGM = new Audio('BGM/通常バトルBGM.mp3');
+            this.battleBGM.loop = true;
+            this.battleBGM.volume = 0.5;
+            this.battleBGM.play().catch(e => console.log('[Battle] BGM再生失敗:', e));
+        } catch (e) {
+            console.log('[Battle] BGM初期化失敗:', e);
+        }
+    }
+
+    /**
+     * 戦闘BGM停止
+     */
+    stopBattleBGM() {
+        if (this.battleBGM) {
+            this.battleBGM.pause();
+            this.battleBGM.currentTime = 0;
+            this.battleBGM = null;
         }
     }
 }
