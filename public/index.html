@@ -20,6 +20,8 @@
     <!-- Boot Screen for Audio Unlock -->
     <div id="boot-screen">
       <div class="boot-prompt">INITIALIZING SYSTEM... [ CLICK TO CONNECT ]</div>
+      <!-- デバッグモード用隠しパスワード入力 -->
+      <input type="password" id="debug-password" class="debug-password-input" placeholder="..." autocomplete="off">
     </div>
 
     <div id="app">
@@ -335,6 +337,7 @@
     <script src="js/systems/enemies.js"></script>
     <script src="js/systems/battle_system.js"></script>
     <script src="js/systems/event_manager.js"></script>
+    <script src="js/systems/debug_mode.js"></script>
     <script type="module" src="main.js"></script>
   </body>
 </html>

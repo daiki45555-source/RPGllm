@@ -1,0 +1,394 @@
+/**
+ * デバッグモード（大器モード）
+ * 七つの願いが降る庭で - Debug Mode System
+ */
+
+class DebugMode {
+    constructor() {
+        this.isEnabled = false;
+        this.password = 'd0154723939';
+        this.panelVisible = true;
+    }
+
+    /**
+     * パスワードをチェック
+     */
+    checkPassword(input) {
+        return input === this.password;
+    }
+
+    /**
+     * デバッグモードを有効化
+     */
+    activate() {
+        this.isEnabled = true;
+        console.log('[DEBUG MODE] 大器モード有効化！');
+        
+        // ゲーム状態を初期化
+        this.initGameState();
+        
+        // デバッグUIを作成
+        this.createDebugUI();
+        
+        return true;
+    }
+
+    /**
+     * デバッグ用ゲーム状態初期化（能力値MAX、カルマ10レベル）
+     */
+    initGameState() {
+        window.gameState = window.gameState || {};
+        
+        // プレイヤー情報（全能力値MAX）
+        window.gameState.player = {
+            name: 'デバッグ主人公',
+            preciousWord: 'マグノリア', // 黒騎士の名前固定
+            level: 50,
+            exp: 99999,
+            
+            // 能力値MAX
+            hp: 999,
+            maxHp: 999,
+            stm: 999,
+            maxStm: 999,
+            atk: 99,
+            def: 99,
+            spd: 99,
+            
+            // 所持金MAX
+            money: 999999
+        };
+
+        // カルマ10レベル（200pt）
+        if (typeof KarmaSystem !== 'undefined') {
+            KarmaSystem.setKarmaValue('integrity', 200);   // 誠実
+            KarmaSystem.setKarmaValue('kindness', 200);    // 慈悲
+            KarmaSystem.setKarmaValue('justice', 200);     // 正義
+            KarmaSystem.setKarmaValue('bravery', 200);     // 勇気
+            KarmaSystem.setKarmaValue('perseverance', 200);// 執念
+            KarmaSystem.setKarmaValue('patience', 200);    // 忍耐
+            // 隠しカルマ
+            KarmaSystem.setKarmaValue('sadism', 0);        // 嗜虐
+            KarmaSystem.setKarmaValue('rebel', 0);         // 反逆
+        }
+
+        // 絆情報
+        window.gameState.bonds = {
+            jack: { rank: 0, points: 0, unlocked: true },
+            marianne: { rank: 0, points: 0, unlocked: true },
+            crow: { rank: 0, points: 0, unlocked: true }
+        };
+
+        // 時間・日付
+        window.gameState.time = {
+            hour: 10,
+            day: 1
+        };
+
+        // フラグ
+        window.gameState.flags = {
+            prologueComplete: true,
+            metJack: true,
+            joinedCrowsNest: true
+        };
+
+        console.log('[DEBUG MODE] ゲーム状態初期化完了');
+    }
+
+    /**
+     * デバッグUIパネルを作成
+     */
+    createDebugUI() {
+        // 既存のパネルがあれば削除
+        const existing = document.getElementById('debug-panel');
+        if (existing) existing.remove();
+
+        const panel = document.createElement('div');
+        panel.id = 'debug-panel';
+        panel.className = 'debug-panel';
+        panel.innerHTML = this.generatePanelHTML();
+        document.body.appendChild(panel);
+
+        // イベントリスナー設定
+        this.setupEventListeners();
+
+        console.log('[DEBUG MODE] デバッグUI作成完了');
+    }
+
+    /**
+     * パネルHTMLを生成
+     */
+    generatePanelHTML() {
+        const player = window.gameState?.player || {};
+        const bonds = window.gameState?.bonds || {};
+
+        return `
+            <div class="debug-header" onclick="debugMode.togglePanel()">
+                🛠️ 大器モード <span class="debug-toggle">${this.panelVisible ? '▼' : '▶'}</span>
+            </div>
+            <div class="debug-content" style="display: ${this.panelVisible ? 'block' : 'none'}">
+                <!-- 能力値 -->
+                <div class="debug-section">
+                    <div class="debug-section-title">📊 能力値</div>
+                    <div class="debug-row">
+                        <label>HP:</label>
+                        <input type="number" id="debug-hp" value="${player.hp || 100}" min="1" max="9999">
+                        <span>/</span>
+                        <input type="number" id="debug-maxHp" value="${player.maxHp || 100}" min="1" max="9999">
+                    </div>
+                    <div class="debug-row">
+                        <label>STM:</label>
+                        <input type="number" id="debug-stm" value="${player.stm || 100}" min="0" max="9999">
+                        <span>/</span>
+                        <input type="number" id="debug-maxStm" value="${player.maxStm || 100}" min="1" max="9999">
+                    </div>
+                    <div class="debug-row">
+                        <label>ATK:</label>
+                        <input type="number" id="debug-atk" value="${player.atk || 10}" min="1" max="999">
+                    </div>
+                    <div class="debug-row">
+                        <label>DEF:</label>
+                        <input type="number" id="debug-def" value="${player.def || 5}" min="0" max="999">
+                    </div>
+                    <div class="debug-row">
+                        <label>SPD:</label>
+                        <input type="number" id="debug-spd" value="${player.spd || 10}" min="1" max="999">
+                    </div>
+                    <div class="debug-row">
+                        <label>金:</label>
+                        <input type="number" id="debug-money" value="${player.money || 0}" min="0" max="9999999">
+                        <span>M</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>LV:</label>
+                        <input type="number" id="debug-level" value="${player.level || 1}" min="1" max="99">
+                    </div>
+                    <button class="debug-btn" onclick="debugMode.applyStats()">適用</button>
+                </div>
+
+                <!-- カルマ -->
+                <div class="debug-section">
+                    <div class="debug-section-title">⚖️ カルマ</div>
+                    <div class="debug-row">
+                        <label>誠実:</label>
+                        <input type="range" id="debug-karma-integrity" min="0" max="200" value="200">
+                        <span id="debug-karma-integrity-val">200</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>慈悲:</label>
+                        <input type="range" id="debug-karma-kindness" min="0" max="200" value="200">
+                        <span id="debug-karma-kindness-val">200</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>正義:</label>
+                        <input type="range" id="debug-karma-justice" min="0" max="200" value="200">
+                        <span id="debug-karma-justice-val">200</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>勇気:</label>
+                        <input type="range" id="debug-karma-bravery" min="0" max="200" value="200">
+                        <span id="debug-karma-bravery-val">200</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>執念:</label>
+                        <input type="range" id="debug-karma-perseverance" min="0" max="200" value="200">
+                        <span id="debug-karma-perseverance-val">200</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>忍耐:</label>
+                        <input type="range" id="debug-karma-patience" min="0" max="200" value="200">
+                        <span id="debug-karma-patience-val">200</span>
+                    </div>
+                    <div class="debug-section-title" style="margin-top: 10px;">🌑 隠しカルマ</div>
+                    <div class="debug-row">
+                        <label>嗜虐:</label>
+                        <input type="range" id="debug-karma-sadism" min="0" max="200" value="0">
+                        <span id="debug-karma-sadism-val">0</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>反逆:</label>
+                        <input type="range" id="debug-karma-rebel" min="0" max="200" value="0">
+                        <span id="debug-karma-rebel-val">0</span>
+                    </div>
+                    <button class="debug-btn" onclick="debugMode.applyKarma()">適用</button>
+                </div>
+
+                <!-- 絆 -->
+                <div class="debug-section">
+                    <div class="debug-section-title">💕 絆ランク</div>
+                    <div class="debug-row">
+                        <label>ジャック:</label>
+                        <input type="number" id="debug-bond-jack" min="0" max="10" value="${bonds.jack?.rank || 0}">
+                    </div>
+                    <div class="debug-row">
+                        <label>マリアンヌ:</label>
+                        <input type="number" id="debug-bond-marianne" min="0" max="10" value="${bonds.marianne?.rank || 0}">
+                    </div>
+                    <div class="debug-row">
+                        <label>クロウ:</label>
+                        <input type="number" id="debug-bond-crow" min="0" max="10" value="${bonds.crow?.rank || 0}">
+                    </div>
+                    <button class="debug-btn" onclick="debugMode.applyBonds()">適用</button>
+                </div>
+
+                <!-- ゲーム状態 -->
+                <div class="debug-section">
+                    <div class="debug-section-title">🕐 時間・場所</div>
+                    <div class="debug-row">
+                        <label>時刻:</label>
+                        <input type="number" id="debug-hour" min="0" max="23" value="${window.gameState?.time?.hour || 10}">
+                        <span>時</span>
+                    </div>
+                    <div class="debug-row">
+                        <label>日数:</label>
+                        <input type="number" id="debug-day" min="1" max="365" value="${window.gameState?.time?.day || 1}">
+                        <span>日目</span>
+                    </div>
+                    <button class="debug-btn" onclick="debugMode.applyTime()">適用</button>
+                </div>
+
+                <!-- 戦闘テスト -->
+                <div class="debug-section">
+                    <div class="debug-section-title">⚔️ 戦闘テスト</div>
+                    <button class="debug-btn" onclick="debugMode.testBattle('goblin')">ゴブリン戦</button>
+                    <button class="debug-btn" onclick="debugMode.testBattle('thug_a')">暴漢戦</button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * イベントリスナー設定
+     */
+    setupEventListeners() {
+        // カルマスライダーの値表示更新
+        const karmaTypes = ['integrity', 'kindness', 'justice', 'bravery', 'perseverance', 'patience', 'sadism', 'rebel'];
+        karmaTypes.forEach(type => {
+            const slider = document.getElementById(`debug-karma-${type}`);
+            const valSpan = document.getElementById(`debug-karma-${type}-val`);
+            if (slider && valSpan) {
+                slider.addEventListener('input', () => {
+                    valSpan.textContent = slider.value;
+                });
+            }
+        });
+    }
+
+    /**
+     * パネル表示/非表示切り替え
+     */
+    togglePanel() {
+        this.panelVisible = !this.panelVisible;
+        const content = document.querySelector('.debug-content');
+        const toggle = document.querySelector('.debug-toggle');
+        if (content) content.style.display = this.panelVisible ? 'block' : 'none';
+        if (toggle) toggle.textContent = this.panelVisible ? '▼' : '▶';
+    }
+
+    /**
+     * 能力値を適用
+     */
+    applyStats() {
+        const player = window.gameState?.player;
+        if (!player) return;
+
+        player.hp = parseInt(document.getElementById('debug-hp').value) || 100;
+        player.maxHp = parseInt(document.getElementById('debug-maxHp').value) || 100;
+        player.stm = parseInt(document.getElementById('debug-stm').value) || 100;
+        player.maxStm = parseInt(document.getElementById('debug-maxStm').value) || 100;
+        player.atk = parseInt(document.getElementById('debug-atk').value) || 10;
+        player.def = parseInt(document.getElementById('debug-def').value) || 5;
+        player.spd = parseInt(document.getElementById('debug-spd').value) || 10;
+        player.money = parseInt(document.getElementById('debug-money').value) || 0;
+        player.level = parseInt(document.getElementById('debug-level').value) || 1;
+
+        // VitalGaugeを更新
+        if (window.vitalGauge) {
+            window.vitalGauge.update(player.hp, player.maxHp, player.stm, player.maxStm);
+        }
+
+        console.log('[DEBUG MODE] 能力値適用:', player);
+    }
+
+    /**
+     * カルマを適用
+     */
+    applyKarma() {
+        if (typeof KarmaSystem === 'undefined') {
+            console.warn('[DEBUG MODE] KarmaSystemが見つかりません');
+            return;
+        }
+
+        const karmaTypes = ['integrity', 'kindness', 'justice', 'bravery', 'perseverance', 'patience', 'sadism', 'rebel'];
+        karmaTypes.forEach(type => {
+            const slider = document.getElementById(`debug-karma-${type}`);
+            if (slider) {
+                KarmaSystem.setKarmaValue(type, parseInt(slider.value));
+            }
+        });
+
+        // カルマグラフを更新
+        if (window.karmaGraph) {
+            window.karmaGraph.update();
+        }
+
+        console.log('[DEBUG MODE] カルマ適用完了');
+    }
+
+    /**
+     * 絆を適用
+     */
+    applyBonds() {
+        const bonds = window.gameState?.bonds;
+        if (!bonds) return;
+
+        bonds.jack.rank = parseInt(document.getElementById('debug-bond-jack').value) || 0;
+        bonds.marianne.rank = parseInt(document.getElementById('debug-bond-marianne').value) || 0;
+        bonds.crow.rank = parseInt(document.getElementById('debug-bond-crow').value) || 0;
+
+        console.log('[DEBUG MODE] 絆適用:', bonds);
+    }
+
+    /**
+     * 時間を適用
+     */
+    applyTime() {
+        if (!window.gameState) window.gameState = {};
+        if (!window.gameState.time) window.gameState.time = {};
+
+        window.gameState.time.hour = parseInt(document.getElementById('debug-hour').value) || 10;
+        window.gameState.time.day = parseInt(document.getElementById('debug-day').value) || 1;
+
+        // LocationManagerの時間も更新
+        if (window.locationManager) {
+            window.locationManager.gameHour = window.gameState.time.hour;
+            window.locationManager.gameDay = window.gameState.time.day;
+            window.locationManager.updateUI();
+        }
+
+        console.log('[DEBUG MODE] 時間適用:', window.gameState.time);
+    }
+
+    /**
+     * 戦闘テスト
+     */
+    testBattle(enemyId) {
+        if (typeof battleSystem === 'undefined' || typeof spawnEnemy === 'undefined') {
+            console.warn('[DEBUG MODE] 戦闘システムが見つかりません');
+            return;
+        }
+
+        const enemyData = getEnemyData(enemyId);
+        if (enemyData) {
+            enemyData.count = 1;
+            battleSystem.startBattle(enemyData);
+        }
+    }
+}
+
+// グローバルインスタンス
+const debugMode = new DebugMode();
+
+// グローバル登録
+window.debugMode = debugMode;
+window.DebugMode = DebugMode;

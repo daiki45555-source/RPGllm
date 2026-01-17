@@ -214,6 +214,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Boot Screen
     if (elements.bootScreen) {
+        // パスワード入力でデバッグモード起動
+        const debugPasswordInput = document.getElementById('debug-password');
+        if (debugPasswordInput) {
+            debugPasswordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.stopPropagation();
+                    if (window.debugMode && window.debugMode.checkPassword(debugPasswordInput.value)) {
+                        console.log('[DEBUG MODE] パスワード認証成功！大器モード起動！');
+                        elements.audioManager.playBGM('./BGM/title_theme.mp3');
+                        elements.bootScreen.classList.add("hidden");
+                        
+                        // デバッグモード有効化
+                        window.debugMode.activate();
+                        
+                        // プロローグスキップ → ロケーションマネージャー表示
+                        if (window.LocationManager) {
+                            window.locationManager = new window.LocationManager();
+                            window.locationManager.init();
+                            window.locationManager.show();
+                        }
+                        
+                        log("[DEBUG MODE] 大器モード起動！プロローグスキップ。");
+                    } else {
+                        console.log('[DEBUG MODE] パスワードが違います');
+                        debugPasswordInput.value = '';
+                        debugPasswordInput.style.borderColor = '#ff0000';
+                        setTimeout(() => {
+                            debugPasswordInput.style.borderColor = 'rgba(255, 153, 0, 0.3)';
+                        }, 500);
+                    }
+                }
+            });
+            
+            // パスワード入力欄クリックでブート画面クリックを無効化
+            debugPasswordInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
         elements.bootScreen.addEventListener("click", () => {
             console.log("Boot screen clicked");
             elements.audioManager.playBGM('./BGM/title_theme.mp3');
