@@ -723,6 +723,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // プロローグスキップ → ロケーションマネージャー表示
                     setTimeout(() => {
+                        // タイトル/イントロダクションセクションを非表示（黒いボックス対策）
+                        const introduction = document.getElementById('introduction');
+                        const titleUI = document.getElementById('title-screen-ui');
+                        if (introduction) {
+                            introduction.classList.remove('active');
+                            introduction.classList.add('hidden');
+                            introduction.style.display = 'none';
+                        }
+                        if (titleUI) titleUI.style.display = 'none';
+                        
                         if (window.LocationManager) {
                             window.locationManager = new window.LocationManager();
                             window.locationManager.init();
