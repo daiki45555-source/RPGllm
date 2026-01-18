@@ -1,9 +1,13 @@
 # 背景素材カタログ
 
-| ID | 日本語名 | パス | 使用シーン |
+| ID / ファイル名 | 日本語名 | パス | 主な使用シーン |
 |----|----------|------|------------|
-| counseling_room | カウンセリング室 | `assets/backgrounds/counseling_room.webp` | カルマテスト/診断 |
-| crows_nest_exterior | 鴉の巣（外観） | `assets/backgrounds/crows_nest_exterior.webp` | 拠点到着時 |
-| crows_nest_room | 鴉の巣（自室） | `assets/backgrounds/crows_nest_room.webp` | 拠点内、探索開始点 |
-| forest_path | 林道 | `assets/backgrounds/forest_path.webp` | 探索、第1層 |
-| library | 図書館 | `assets/backgrounds/library.webp` | 知識習得イベント |
+| `title_bg.png` | タイトル背景 | `images/title_bg.png` | タイトル画面 |
+| `counseling_room.png` | カウンセリング室 | `images/counseling_room.png` | カルマテスト/診断 |
+| `街道` | 街道（プロローグ） | `images/bg/街道（オープニングでジャックに拾われるときの）.png` | プロローグ |
+| `鴉の巣　宿部屋.png` | 鴉の巣（自室） | `images/bg/鴉の巣　宿部屋.png` | 拠点内、自室 |
+| `冒険者ギルド　鴉の巣` | 鴉の巣（ホール） | `images/bg/冒険者ギルド　鴉の巣　メインホール.png` | 拠点内、メインホール |
+| `グラディウス王立図書館` | 図書館 | `images/bg/グラディウス王立図書館.png` | 図書館 |
+| `グラディウス　皇帝広場` | 皇帝広場 | `images/bg/グラディウス　皇帝広場.png` | 都市内 |
+| `カストルム大聖堂` | 大聖堂 | `images/bg/カストルム大聖堂.png` | 都市内 |
+| `bluesky_plains.png` | 青空の平原 | `images/bluesky_plains.png` | フィールド（第1層） |
