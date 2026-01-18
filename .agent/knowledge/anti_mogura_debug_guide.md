@@ -94,9 +94,39 @@ git checkout .              # 全部戻す
 
 ---
 
+## 🛠️ シーン別ジャンプコマンド (Console)
+```javascript
+debug.jumpTo('title')        // タイトル画面
+debug.jumpTo('charCreate')   // キャラメイク
+debug.jumpTo('karmaTest')    // カルマテスト
+debug.jumpTo('jackEvent')    // ジャックイベント
+debug.jumpTo('field')        // フィールド
+debug.setStats({str:50, int:50}) // ステータス一括設定
+```
+
+---
+
+## 📋 シーン別デバッグチェックリスト
+
+| 確認項目 | ジャンプ先 | 確認方法 |
+|----------|-----------|----------|
+| タイトルUI | `debug.jumpTo('title')` | ボタン配置、背景の重なり |
+| 戦闘システム | `debug.jumpTo('battle')` | 攻撃実行、ターン進行 |
+| ジャックイベント | `debug.jumpTo('jackEvent')` | 立ち絵表示、セリフ進行 |
+| フィールド | `debug.jumpTo('field')` | 移動、エンカウント |
+
+---
+
+## 🌐 URLパラメータで直接起動
+開発中はブラウザのURL末尾に以下を付ける：
+- `?scene=jackEvent&karma=50`
+- `?scene=battle&enemy=slime`
+
+---
+
 ## 🎯 まとめ
 ```
 1つ直す → 全体確認 → OK? → 次へ
                     → NG? → 即戻す → 別アプローチ
 ```
-**「急がば回れ」これがアンチモグラ叩きの極意！**
+**「急がば回れ、そして飛べ」これがデバッグ効率化の極意！**

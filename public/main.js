@@ -220,6 +220,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // --- URL PARAMETER DEBUG JUMP ---
+  function handleURLParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const scene = urlParams.get("scene");
+    const karma = urlParams.get("karma");
+    const enemy = urlParams.get("enemy");
+
+    if (scene && window.debugMode) {
+      log(`[DEBUG] URLパラメータ検出: scene=${scene}`);
+      
+      // デバッグモード有効化（パスワード不要）
+      window.debugMode.activate();
+
+      // カルマ指定があれば反映
+      if (karma !== null && window.karmaGraph) {
+        const k = parseInt(karma);
+        // 全カルマを一律設定（簡易実装）
+        const stats = ["integrity", "kindness", "justice", "bravery", "perseverance", "patience"];
+        stats.forEach(s => {
+            if (window.debugMode.setKarma) {
+                window.debugMode.setKarma(s, k);
+            }
+        });
+      }
+
+      // ブート画面・タイトルを消してジャンプ
+      if (elements.bootScreen) elements.bootScreen.classList.add("hidden");
+      const titleUI = document.getElementById("title-screen-ui");
+      if (titleUI) titleUI.style.display = "none";
+      
+      // シーンジャンプ実行
+      if (window.debugMode.jumpTo) {
+          window.debugMode.jumpTo(scene, { enemy: enemy });
+      }
+    }
+  }
+
+  // 初期化完了のタイミングで実行（既存のロード処理の後など）
+  setTimeout(handleURLParameters, 500);
+
   // Global Hover Sound
   document.body.addEventListener("mouseover", (e) => {
     if (

@@ -1,0 +1,36 @@
+{
+    "slot": 98,
+    "label": "DEBUG: 鴉の巣(探索開始直後)",
+    "timestamp": "2026-01-18T12:00:00Z",
+    "data": {
+        "player": {
+            "name": "デバッグ",
+            "hp": 999,
+            "maxHp": 999,
+            "stm": 999,
+            "maxStm": 999,
+            "atk": 99,
+            "def": 99,
+            "spd": 99,
+            "money": 5000,
+            "level": 5
+        },
+        "location": "base_hall",
+        "time": {
+            "day": 1,
+            "hour": 8
+        },
+        "flags": {
+            "prologueComplete": true,
+            "metJack": true
+        },
+        "karma": {
+            "integrity": 100,
+            "kindness": 100,
+            "justice": 100,
+            "bravery": 100,
+            "perseverance": 100,
+            "patience": 100
+        }
+    }
+}

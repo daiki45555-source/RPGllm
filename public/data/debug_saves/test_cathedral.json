@@ -1,0 +1,36 @@
+{
+  "slot": 99,
+  "label": "DEBUG: カテドラル(マリアンヌ)",
+  "timestamp": "2026-01-18T12:00:00Z",
+  "data": {
+    "player": {
+      "name": "デバッグ",
+      "hp": 999,
+      "maxHp": 999,
+      "stm": 999,
+      "maxStm": 999,
+      "atk": 99,
+      "def": 99,
+      "spd": 99,
+      "money": 10000,
+      "level": 10
+    },
+    "location": "cathedral",
+    "time": {
+      "day": 10,
+      "hour": 14
+    },
+    "flags": {
+      "prologueComplete": true,
+      "metMarianne": true
+    },
+    "karma": {
+      "integrity": 100,
+      "kindness": 150,
+      "justice": 100,
+      "bravery": 100,
+      "perseverance": 100,
+      "patience": 100
+    }
+  }
+}

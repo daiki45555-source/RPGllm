@@ -332,6 +332,39 @@ class DebugMode {
     }
 
     /**
+     * 指定したシーンにジャンプ
+     */
+    jumpTo(sceneName, params = {}) {
+        console.log(`[DEBUG MODE] シーンジャンプ試行: ${sceneName}`, params);
+
+        // LocationManagerが利用可能か確認
+        if (window.locationManager) {
+            // LocationManagerにjumpまたは相当する機能があるか確認
+            if (typeof window.locationManager.jumpToScene === 'function') {
+                window.locationManager.jumpToScene(sceneName, params);
+            } else {
+                // 現状の実装に合わせてフェーズを切り替える
+                this.skipToPhase(sceneName);
+            }
+        } else {
+            console.warn('[DEBUG MODE] LocationManagerが見つかりません。初期化を待機します。');
+            setTimeout(() => this.jumpTo(sceneName, params), 500);
+        }
+    }
+
+    /**
+     * カルマ値を直接設定
+     */
+    setKarma(type, value) {
+        if (typeof KarmaSystem !== 'undefined') {
+            KarmaSystem.setKarmaValue(type, value);
+            // グラフがあれば更新
+            if (window.karmaGraph) window.karmaGraph.update();
+            console.log(`[DEBUG MODE] Karma更新: ${type} = ${value}`);
+        }
+    }
+
+    /**
      * カルマを適用
      */
     applyKarma() {
@@ -344,14 +377,9 @@ class DebugMode {
         karmaTypes.forEach(type => {
             const slider = document.getElementById(`debug-karma-${type}`);
             if (slider) {
-                KarmaSystem.setKarmaValue(type, parseInt(slider.value));
+                this.setKarma(type, parseInt(slider.value));
             }
         });
-
-        // カルマグラフを更新
-        if (window.karmaGraph) {
-            window.karmaGraph.update();
-        }
 
         console.log('[DEBUG MODE] カルマ適用完了');
     }
