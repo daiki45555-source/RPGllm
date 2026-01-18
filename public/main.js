@@ -1,4 +1,4 @@
-﻿import { Utils } from "./js/utils/utils.js";
+﻿﻿import { Utils } from "./js/utils/utils.js";
 import { SettingsManager } from "./js/systems/settings_manager.js";
 const script = {
   welcome: [
@@ -755,3 +755,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   log("Gaialem System Interface: Standby.");
 });
+
