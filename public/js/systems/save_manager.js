@@ -156,6 +156,7 @@ class SaveManager {
         
         // ページをリロードしてセーブデータを反映
         // タイトル画面からロードした場合はLocationManagerを表示
+        sessionStorage.setItem('resume_game', 'true');
         setTimeout(() => {
             window.location.reload();
         }, 100);

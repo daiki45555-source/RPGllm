@@ -161,19 +161,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === セーブデータからのロード状態確認 ===
+  // Note: ロードボタン経由でのリロード時のみ自動復帰
+  const shouldResume = sessionStorage.getItem('resume_game') === 'true';
   const isPrologueComplete = localStorage.getItem('prologue_complete') === 'true';
-  if (isPrologueComplete && window.LocationManager) {
-    log("Prologue already complete. Restoring game state...");
+  
+  if (shouldResume && isPrologueComplete && window.LocationManager) {
+    log("Resuming game from load...");
+    sessionStorage.removeItem('resume_game');
     
     // ブート画面とタイトルUIを非表示
     if (elements.bootScreen) {
       elements.bootScreen.classList.add('hidden');
+      elements.bootScreen.style.display = 'none'; // Force hide
     }
     const titleUI = document.getElementById('title-screen-ui');
     if (titleUI) {
       titleUI.style.display = 'none';
     }
     
+    // 1. Scene Transition to Base (or current location)
+    if (elements.backgroundLayer) {
+        elements.backgroundLayer.classList.remove("bg-title");
+        // ロケーションに応じた背景設定はLocationManagerが行うはずだが、初期化として何かセットしても良い
+    }
+
     // LocationManager初期化・表示
     window.locationManager = new window.LocationManager();
     window.locationManager.init();
@@ -186,7 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // BGM再生
     if (elements.audioManager) {
-      elements.audioManager.playBGM('./BGM/title_theme.mp3');
+        // ロード時は拠点BGMなどを再生すべきだが、一旦タイトルテーマか、LocationManagerに任せる
+        // elements.audioManager.playBGM('./BGM/title_theme.mp3'); 
     }
     
     log("Game state restored from save.");

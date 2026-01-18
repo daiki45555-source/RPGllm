@@ -2664,11 +2664,12 @@ body.crt-mode::before {
     justify-content: flex-end;
 }
 
-/* キャラクター表示 - 左側に配置 */
+/* キャラクター表示 - 中央に配置 */
 .character-display {
     position: absolute;
     bottom: 0;
-    left: 5%;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 10;
 }
 
@@ -2679,14 +2680,16 @@ body.crt-mode::before {
     filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
 }
 
-/* ダイアログボックス - 画面下部に固定 */
+/* ダイアログボックス - 画面下部に固定・中央揃え */
 .dialogue-box {
     position: relative;
     z-index: 100;
     background: linear-gradient(180deg, rgba(10, 10, 20, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%);
     border-top: 2px solid rgba(0, 255, 170, 0.3);
     padding: 20px 30px;
-    margin: 0 20px 20px 20px;
+    margin: 0 auto 20px auto;
+    width: 90%;
+    max-width: 800px;
     border-radius: 8px;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
     min-height: 100px;
