@@ -51,13 +51,17 @@
 
 ---
 
-## 🎮 デバッグジャンプコマンド（未実装 → 実装予定）
+## 🎮 デバッグジャンプコマンド（✅ 実装完了）
 
 ```javascript
-// 将来的にこれで直接ジャンプ可能にする
-debug.jumpTo('IV3')  // ジャックとの邂逅へ直行
-debug.jumpTo('JK1')  // ジャックRank1イベントへ
-debug.jumpTo('MA1')  // マリアンヌRank1イベントへ
+// URLパラメータでジャンプ
+http://localhost:3000/?event=IV2  // カルマテストへ直行
+http://localhost:3000/?event=IV3  // ジャック邂逅へ直行
+http://localhost:3000/?event=JK1  // ジャックRank1イベントへ
+
+// コンソールからジャンプ
+debugMode.jumpToEvent('IV2')  // カルマテストへ
+debugMode.jumpToEvent('JK1')  // ジャックRank1へ
 ```
 
 ---
@@ -66,9 +70,11 @@ debug.jumpTo('MA1')  // マリアンヌRank1イベントへ
 
 | タグ | 問題 | ステータス |
 |-----|------|-----------|
+| **IV2** | カルマテストジャンプ不具合 | ✅ **修正済み** (2026-01-18) |
 | **IV3** | UI被り（立ち絵・ダイアログが左寄せ） | 🔴 未修正 |
 
 ---
 
 ## 📝 更新履歴
+- 2026-01-18: IV2ジャンプ修正 - `evaluation-section` → `evaluation` ID修正
 - 2026-01-18: 初版作成

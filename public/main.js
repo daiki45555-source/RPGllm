@@ -800,6 +800,9 @@ document.addEventListener("DOMContentLoaded", () => {
   async function startEvaluation() {
     renderQuestion();
   }
+  
+  // デバッグジャンプ用にグローバルエクスポート
+  window.startEvaluation = startEvaluation;
 
   async function renderQuestion() {
     const q = evaluation.getCurrentQuestion();

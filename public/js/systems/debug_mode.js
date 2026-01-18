@@ -590,8 +590,39 @@ class DebugMode {
                 }
                 break;
             case 'karma_test':
-                if (typeof startEvaluation === 'function') {
-                    startEvaluation();
+                // UIセットアップ
+                const bgLayer = document.getElementById('background-layer');
+                const evalSection = document.getElementById('evaluation');
+                const titleUI = document.getElementById('title-screen-ui');
+                const bootScreen = document.getElementById('boot-screen');
+                
+                // ブート・タイトル非表示
+                if (bootScreen) bootScreen.classList.add('hidden');
+                if (titleUI) titleUI.style.display = 'none';
+                
+                // カウンセリング背景
+                if (bgLayer) {
+                    bgLayer.classList.remove('bg-title', 'bg-sky');
+                    bgLayer.classList.add('bg-counseling');
+                }
+                
+                // 評価セクション表示（確実に表示）
+                if (evalSection) {
+                    evalSection.classList.remove('hidden');
+                    evalSection.classList.add('active');
+                    evalSection.style.display = 'block';
+                }
+                
+                // BGM再生
+                if (window.audioManager) {
+                    window.audioManager.playBGM('./BGM/ゆりかご（カルマカウンセリング時のＢＧＭ）.mp3');
+                }
+                
+                // 評価開始
+                if (typeof window.startEvaluation === 'function') {
+                    window.startEvaluation();
+                } else {
+                    console.error('[DEBUG MODE] startEvaluation関数が見つかりません');
                 }
                 break;
             case 'exploration':
