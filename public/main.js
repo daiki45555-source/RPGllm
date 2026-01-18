@@ -358,6 +358,110 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // デバッグボタン
+  const btnDebug = document.getElementById("btn-debug");
+  if (btnDebug) {
+    btnDebug.addEventListener("click", () => {
+      if (elements.audioManager) elements.audioManager.playSE("click");
+      showDebugPasswordModal();
+    });
+  }
+
+  // デバッグパスワード入力モーダル
+  function showDebugPasswordModal() {
+    // 既存のモーダルがあれば削除
+    const existing = document.getElementById("debug-modal");
+    if (existing) existing.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "debug-modal";
+    modal.className = "modal-overlay";
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 400px; padding: 2rem;">
+        <header class="modal-header">
+          <span class="mono-text">🛠️ DEBUG_ACCESS_PANEL</span>
+          <button id="btn-close-debug" class="btn-close">×</button>
+        </header>
+        <div style="padding: 1.5rem;">
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">開発者パスワードを入力してください</p>
+          <input 
+            type="password" 
+            id="debug-modal-password" 
+            style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); color: var(--accent-color); font-family: var(--font-mono); font-size: 1rem;"
+            placeholder="Password..."
+            autocomplete="off"
+          />
+          <div id="debug-modal-error" style="color: #ff4444; margin-top: 0.5rem; font-size: 0.9rem;"></div>
+          <button id="btn-debug-submit" class="btn-premium" style="width: 100%; margin-top: 1rem;">アクセス</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const passwordInput = document.getElementById("debug-modal-password");
+    const submitBtn = document.getElementById("btn-debug-submit");
+    const closeBtn = document.getElementById("btn-close-debug");
+    const errorDiv = document.getElementById("debug-modal-error");
+
+    passwordInput.focus();
+
+    // 閉じるボタン
+    closeBtn.addEventListener("click", () => {
+      if (elements.audioManager) elements.audioManager.playSE("click");
+      modal.remove();
+    });
+
+    // オーバーレイクリックで閉じる
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    // 送信処理
+    function attemptLogin() {
+      if (window.debugMode && window.debugMode.checkPassword(passwordInput.value)) {
+        if (elements.audioManager) elements.audioManager.playSE("click");
+        modal.remove();
+        
+        // ブート画面を非表示
+        if (elements.bootScreen) {
+          elements.bootScreen.classList.add("hidden");
+        }
+        
+        // タイトルUIを非表示
+        const titleUI = document.getElementById("title-screen-ui");
+        if (titleUI) titleUI.style.display = "none";
+        
+        // BGM再生
+        if (elements.audioManager) {
+          elements.audioManager.playBGM("./BGM/title_theme.mp3");
+        }
+        
+        // デバッグモード有効化
+        window.debugMode.activate();
+        
+        // LocationManager表示
+        if (window.LocationManager) {
+          window.locationManager = new window.LocationManager();
+          window.locationManager.init();
+          window.locationManager.show();
+        }
+        
+        log("[DEBUG MODE] 大器モード起動！プロローグスキップ。");
+      } else {
+        errorDiv.textContent = "ACCESS_DENIED: パスワードが違います";
+        passwordInput.value = "";
+        passwordInput.style.borderColor = "#ff4444";
+        setTimeout(() => {
+          passwordInput.style.borderColor = "var(--accent-color)";
+        }, 500);
+      }
+    }
+
+    submitBtn.addEventListener("click", attemptLogin);
+    passwordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") attemptLogin();
+    });
+  }
 
   // --- GAME LOGIC ---
 

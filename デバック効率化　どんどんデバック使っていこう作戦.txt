@@ -1,0 +1,41 @@
+🔧 デバッグ効率化の提案
+1. .agent/workflows/ にデバッグルールを追加
+markdown# デバッグ時の鉄則
+1. まずデバッグモードで目的のシーンに飛べ！
+2. フルフローテストは最後の動作確認だけ！
+3. 毎回最初からやるな！！
+
+2. シーン別ジャンプコマンド一覧を作る
+javascript// コンソールから直接実行できるコマンド集
+debug.jumpTo('title')        // タイトル画面
+debug.jumpTo('charCreate')   // キャラメイク
+debug.jumpTo('karmaTest')    // カルマテスト
+debug.jumpTo('jackEvent')    // ジャックイベント
+debug.jumpTo('field')        // フィールド
+debug.setStats({str:10, int:15, ...})  // ステータス設定
+```
+
+---
+
+### 3. **デバッグチェックリスト**
+
+| 確認項目 | ジャンプ先 | 確認方法 |
+|----------|-----------|----------|
+| タイトルUI | `debug.jumpTo('title')` | 目視 |
+| 戦闘システム | `debug.jumpTo('battle')` | 攻撃実行 |
+| ジャックイベント | デバッグモード使用 | 立ち絵確認 |
+
+---
+
+### 4. **URLパラメータでシーン指定**
+```
+localhost:3000?scene=jackEvent&karma=50
+localhost:3000?scene=battle&enemy=slime
+
+5. テスト用セーブデータ
+各シーン直前のセーブデータを用意しておく：
+
+test_before_karma.json
+test_before_jack.json
+test_before_battle.json
+
