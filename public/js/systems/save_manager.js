@@ -147,19 +147,22 @@ class SaveManager {
         
         console.log(`[SaveManager] スロット${slotIndex + 1}からロード完了`);
         
-        // UI更新
-        if (window.locationManager) {
-            window.locationManager.updateUI();
-        }
-        
         // SE再生
         if (window.audioManager) {
             window.audioManager.playSE('click');
         }
         
         this.hide();
+        
+        // ページをリロードしてセーブデータを反映
+        // タイトル画面からロードした場合はLocationManagerを表示
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+        
         return true;
     }
+
     
     /**
      * スロット削除
@@ -345,3 +348,5 @@ class SaveManager {
 // グローバル登録
 window.SaveManager = SaveManager;
 window.saveManager = new SaveManager();
+window.saveManager.init(); // UIを作成
+

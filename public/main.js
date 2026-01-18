@@ -160,6 +160,39 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Inventory class not found.");
   }
 
+  // === セーブデータからのロード状態確認 ===
+  const isPrologueComplete = localStorage.getItem('prologue_complete') === 'true';
+  if (isPrologueComplete && window.LocationManager) {
+    log("Prologue already complete. Restoring game state...");
+    
+    // ブート画面とタイトルUIを非表示
+    if (elements.bootScreen) {
+      elements.bootScreen.classList.add('hidden');
+    }
+    const titleUI = document.getElementById('title-screen-ui');
+    if (titleUI) {
+      titleUI.style.display = 'none';
+    }
+    
+    // LocationManager初期化・表示
+    window.locationManager = new window.LocationManager();
+    window.locationManager.init();
+    window.locationManager.show();
+    
+    // VitalGaugeを表示
+    if (window.vitalGauge) {
+      window.vitalGauge.show();
+    }
+    
+    // BGM再生
+    if (elements.audioManager) {
+      elements.audioManager.playBGM('./BGM/title_theme.mp3');
+    }
+    
+    log("Game state restored from save.");
+  }
+
+
   // State
   let isAutoProgression = true;
   let isSkipping = false;
@@ -309,6 +342,22 @@ document.addEventListener("DOMContentLoaded", () => {
       startSequence();
     });
   }
+
+  // ロードボタン
+  const btnLoad = document.getElementById("btn-load");
+  if (btnLoad && window.saveManager) {
+    // セーブデータがあればボタンを有効化
+    const hasAnyData = window.saveManager.slots.some(slot => slot !== null);
+    if (hasAnyData) {
+      btnLoad.disabled = false;
+    }
+    
+    btnLoad.addEventListener("click", () => {
+      if (elements.audioManager) elements.audioManager.playSE("click");
+      window.saveManager.showLoadUI();
+    });
+  }
+
 
   // --- GAME LOGIC ---
 

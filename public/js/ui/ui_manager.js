@@ -24,12 +24,29 @@ class UIManager {
         if (visible) {
             this.overlay.classList.remove('hidden');
             this.overlay.classList.add('visible');
+            
+            // 他のUIを非表示にしてUI重複を防ぐ
+            if (window.locationManager && window.locationManager.container) {
+                window.locationManager.container.classList.add('hidden');
+            }
+            if (window.vitalGauge && window.vitalGauge.container) {
+                window.vitalGauge.container.classList.add('hidden');
+            }
+            // カルマグラフも非表示
+            const karmaContainer = document.getElementById('karma-graph-container');
+            if (karmaContainer) {
+                karmaContainer.classList.add('hidden');
+            }
         } else {
             this.overlay.classList.remove('visible');
             this.overlay.classList.add('hidden');
             this.clearChoices();
+            
+            // イベント終了後、他のUIを表示（LocationManagerで制御されるので直接は戻さない）
+            // LocationManagerのshow()が呼ばれるとUIが復元される
         }
     }
+
 
     renderDialogue(speaker, text, onNext) {
         if (!this.overlay) return;

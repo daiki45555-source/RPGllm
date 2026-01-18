@@ -2621,7 +2621,309 @@ body.crt-mode::before {
     box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
 }
 
+/* ================================================
+   イベントレイヤー - 全画面オーバーレイ
+   ================================================ */
+.event-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-layer.hidden {
+    display: none !important;
+}
+
+.event-layer.visible {
+    display: flex;
+}
+
+#event-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.event-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+/* キャラクター表示 - 左側に配置 */
+.character-display {
+    position: absolute;
+    bottom: 0;
+    left: 5%;
+    z-index: 10;
+}
+
+.character-display img {
+    max-height: 70vh;
+    max-width: 40vw;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
+}
+
+/* ダイアログボックス - 画面下部に固定 */
+.dialogue-box {
+    position: relative;
+    z-index: 100;
+    background: linear-gradient(180deg, rgba(10, 10, 20, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%);
+    border-top: 2px solid rgba(0, 255, 170, 0.3);
+    padding: 20px 30px;
+    margin: 0 20px 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+    min-height: 100px;
+}
+
+/* 選択肢表示 - ダイアログの上に配置 */
+#event-choices {
+    position: relative;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 20px;
+    margin: 0 20px;
+    background: linear-gradient(180deg, rgba(20, 20, 35, 0.9) 0%, rgba(10, 10, 20, 0.95) 100%);
+    border-radius: 8px 8px 0 0;
+    border: 1px solid rgba(0, 255, 170, 0.2);
+    border-bottom: none;
+}
+
+#event-choices.hidden {
+    display: none;
+}
 
 
+/* ================================================
+   セーブ/ロード モーダル
+   ================================================ */
+.save-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.save-modal.hidden {
+    display: none;
+}
+
+.save-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.save-window {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    background: linear-gradient(145deg, rgba(20, 25, 35, 0.98) 0%, rgba(10, 12, 18, 0.99) 100%);
+    border: 1px solid rgba(0, 255, 170, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(0, 255, 170, 0.2);
+    overflow: hidden;
+}
+
+.save-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 255, 170, 0.3);
+    background: rgba(0, 255, 170, 0.05);
+}
+
+.save-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--accent-color);
+    font-family: var(--font-mono);
+}
+
+.save-close {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    line-height: 1;
+    transition: all 0.3s;
+}
+
+.save-close:hover {
+    color: #ff6666;
+    transform: scale(1.2);
+}
+
+.save-content {
+    padding: 15px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.save-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.save-slot {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.save-slot:hover {
+    background: rgba(0, 255, 170, 0.05);
+    border-color: rgba(0, 255, 170, 0.3);
+}
+
+.save-slot.filled {
+    border-left: 3px solid var(--accent-color);
+}
+
+.save-slot.empty {
+    opacity: 0.6;
+}
+
+.slot-number {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 255, 170, 0.2);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.slot-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.slot-name {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slot-details {
+    display: flex;
+    gap: 15px;
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+}
+
+.slot-timestamp {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--font-mono);
+}
+
+.slot-empty-text {
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+.slot-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.btn-slot-action {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-slot-action:hover {
+    background: var(--accent-color);
+    color: #000;
+    border-color: var(--accent-color);
+}
+
+.btn-slot-action.btn-delete {
+    color: #ff6666;
+    border-color: rgba(255, 100, 100, 0.3);
+}
+
+.btn-slot-action.btn-delete:hover {
+    background: #ff6666;
+    color: #000;
+    border-color: #ff6666;
+}
+
+.save-footer {
+    padding: 10px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.save-hint {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* btn-premium.secondary (ロードボタン用) */
+.btn-premium.secondary {
+    background: linear-gradient(135deg, rgba(30, 35, 45, 0.8) 0%, rgba(20, 25, 35, 0.9) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-premium.secondary:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(40, 45, 55, 0.9) 0%, rgba(30, 35, 45, 1) 100%);
+    border-color: var(--accent-color);
+}
+
+.btn-premium:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
 
