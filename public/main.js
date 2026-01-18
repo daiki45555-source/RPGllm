@@ -236,9 +236,39 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleURLParameters() {
     const urlParams = new URLSearchParams(window.location.search);
     const scene = urlParams.get("scene");
+    const event = urlParams.get("event"); // イベントタグ対応追加
     const karma = urlParams.get("karma");
     const enemy = urlParams.get("enemy");
 
+    // イベントタグでジャンプ（優先）
+    if (event && window.debugMode) {
+      log(`[DEBUG] URLパラメータ検出: event=${event}`);
+      
+      // デバッグモード有効化（パスワード不要）
+      window.debugMode.activate();
+
+      // カルマ指定があれば反映
+      if (karma !== null && window.karmaGraph) {
+        const k = parseInt(karma);
+        const stats = ["integrity", "kindness", "justice", "bravery", "perseverance", "patience"];
+        stats.forEach(s => {
+            if (window.debugMode.setKarma) {
+                window.debugMode.setKarma(s, k);
+            }
+        });
+      }
+
+      // ブート画面・タイトルを消してイベントジャンプ
+      if (elements.bootScreen) elements.bootScreen.classList.add("hidden");
+      const titleUI = document.getElementById("title-screen-ui");
+      if (titleUI) titleUI.style.display = "none";
+      
+      // イベントタグでジャンプ
+      window.debugMode.jumpToEvent(event);
+      return; // 処理完了
+    }
+
+    // 旧scene形式（レガシー互換）
     if (scene && window.debugMode) {
       log(`[DEBUG] URLパラメータ検出: scene=${scene}`);
       

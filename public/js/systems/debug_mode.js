@@ -8,6 +8,30 @@ class DebugMode {
         this.isEnabled = false;
         this.password = 'd0154723939';
         this.panelVisible = true;
+        
+        // イベントタグレジストリ
+        this.EVENT_TAGS = {
+            // IV系: 序盤必須イベント
+            'IV1': { type: 'phase', target: 'title', name: 'オープニング / ブート画面' },
+            'IV2': { type: 'phase', target: 'karma_test', name: 'カルマテスト（影の審問）' },
+            'IV3': { type: 'event', target: 'intro', rank: 'rank1', name: 'ジャック邂逅（プロローグ）' },
+            'IV4': { type: 'flag', target: 'bed_search', name: 'ベッドの下調査' },
+            'IV5': { type: 'phase', target: 'exploration', name: 'プロローグ終了 → ギルド到着' },
+            
+            // JK系: ジャック関連
+            'JK1': { type: 'event', target: 'jack', rank: 'rank1', name: '鉄の胃袋' },
+            'JK2': { type: 'event', target: 'jack', rank: 'rank2', name: '王の唾棄、友の杯' },
+            'JK3': { type: 'event', target: 'jack', rank: 'rank3', name: '昇進という名の首輪' },
+            'JK4': { type: 'event', target: 'jack', rank: 'rank4', name: '道化の天秤' },
+            'JK8': { type: 'event', target: 'jack', rank: 'rank8', name: '紅蓮の勅命、水銀の救済' },
+            'JK10': { type: 'event', target: 'jack', rank: 'rank10', name: '黒き太陽の落日' },
+            
+            // MA系: マリアンヌ関連
+            'MA1': { type: 'event', target: 'marianne', rank: 'rank1', name: '泥の中の祈り' },
+            'MA2': { type: 'event', target: 'marianne', rank: 'rank2', name: '空腹なき晩餐' },
+            'MA3': { type: 'event', target: 'marianne', rank: 'rank3', name: '聖域の籠城' },
+            'MA4': { type: 'event', target: 'marianne', rank: 'rank4', name: '雑草の剪定' },
+        };
     }
 
     /**
@@ -247,6 +271,31 @@ class DebugMode {
                     <button class="debug-btn" onclick="debugMode.applyTime()">適用</button>
                 </div>
 
+                <!-- イベントジャンプ（🎯 メイン機能！）-->
+                <div class="debug-section">
+                    <div class="debug-section-title">🎯 イベントジャンプ</div>
+                    <select id="debug-event-select" class="debug-select">
+                        <optgroup label="IV系: 序盤イベント">
+                            <option value="IV1">IV1: オープニング</option>
+                            <option value="IV2">IV2: カルマテスト</option>
+                            <option value="IV3">IV3: ジャック邂逅</option>
+                            <option value="IV4">IV4: ベッド調査</option>
+                            <option value="IV5">IV5: ギルド到着</option>
+                        </optgroup>
+                        <optgroup label="JK系: ジャック">
+                            <option value="JK1">JK1: 鉄の胃袋</option>
+                            <option value="JK2">JK2: 王の唾棄</option>
+                            <option value="JK3">JK3: 昇進の首輪</option>
+                            <option value="JK4">JK4: 道化の天秤</option>
+                        </optgroup>
+                        <optgroup label="MA系: マリアンヌ">
+                            <option value="MA1">MA1: 泥の中の祈り</option>
+                            <option value="MA2">MA2: 空腹なき晩餐</option>
+                        </optgroup>
+                    </select>
+                    <button class="debug-btn" onclick="debugMode.jumpToEvent()">ジャンプ</button>
+                </div>
+
                 <!-- 戦闘テスト -->
                 <div class="debug-section">
                     <div class="debug-section-title">⚔️ 戦闘テスト</div>
@@ -332,19 +381,101 @@ class DebugMode {
     }
 
     /**
-     * 指定したシーンにジャンプ
+     * イベントタグからジャンプ（メイン機能）
+     */
+    jumpToEvent(tagOrSelect) {
+        // セレクトボックスから取得、または引数を使用
+        const tag = tagOrSelect || document.getElementById('debug-event-select')?.value;
+        if (!tag) {
+            console.warn('[DEBUG MODE] イベントタグが指定されていません');
+            return;
+        }
+
+        const eventInfo = this.EVENT_TAGS[tag.toUpperCase()];
+        if (!eventInfo) {
+            console.warn(`[DEBUG MODE] 不明なイベントタグ: ${tag}`);
+            console.log('[DEBUG MODE] 利用可能なタグ:', Object.keys(this.EVENT_TAGS).join(', '));
+            return;
+        }
+
+        console.log(`[DEBUG MODE] イベントジャンプ: ${tag} → ${eventInfo.name}`);
+
+        // タイトルUIとブート画面を非表示
+        const bootScreen = document.getElementById('boot-screen');
+        const titleUI = document.getElementById('title-screen-ui');
+        if (bootScreen) bootScreen.classList.add('hidden');
+        if (titleUI) titleUI.style.display = 'none';
+
+        switch (eventInfo.type) {
+            case 'phase':
+                // フェーズ系はskipToPhaseを再利用
+                this.skipToPhaseInternal(eventInfo.target);
+                break;
+
+            case 'event':
+                // イベント系はEventManagerを使用
+                this.triggerEventDirect(eventInfo.target, eventInfo.rank);
+                break;
+
+            case 'flag':
+                // フラグ系は将来的に拡張
+                console.log(`[DEBUG MODE] フラグイベント ${tag} は未実装`);
+                break;
+        }
+    }
+
+    /**
+     * イベントを直接トリガー
+     */
+    triggerEventDirect(charId, rankKey) {
+        console.log(`[DEBUG MODE] イベントトリガー: ${charId} / ${rankKey}`);
+
+        // イベントデータを取得
+        let eventData = null;
+        switch (charId) {
+            case 'intro':
+                eventData = window.introEvents?.[rankKey];
+                break;
+            case 'jack':
+                eventData = window.jackEvents?.[rankKey];
+                break;
+            case 'marianne':
+                eventData = window.marianneEvents?.[rankKey];
+                break;
+        }
+
+        if (!eventData) {
+            console.error(`[DEBUG MODE] イベントデータが見つかりません: ${charId}/${rankKey}`);
+            return;
+        }
+
+        // EventManagerでイベント実行
+        if (window.eventManager) {
+            // startEventはeventDataのみを引数として受け取る
+            window.eventManager.startEvent(eventData);
+        } else {
+            console.warn('[DEBUG MODE] EventManagerが見つかりません');
+        }
+    }
+
+    /**
+     * 指定したシーンにジャンプ（レガシー互換）
      */
     jumpTo(sceneName, params = {}) {
         console.log(`[DEBUG MODE] シーンジャンプ試行: ${sceneName}`, params);
 
+        // イベントタグとして認識できるか確認
+        if (this.EVENT_TAGS[sceneName.toUpperCase()]) {
+            this.jumpToEvent(sceneName);
+            return;
+        }
+
         // LocationManagerが利用可能か確認
         if (window.locationManager) {
-            // LocationManagerにjumpまたは相当する機能があるか確認
             if (typeof window.locationManager.jumpToScene === 'function') {
                 window.locationManager.jumpToScene(sceneName, params);
             } else {
-                // 現状の実装に合わせてフェーズを切り替える
-                this.skipToPhase(sceneName);
+                this.skipToPhaseInternal(sceneName);
             }
         } else {
             console.warn('[DEBUG MODE] LocationManagerが見つかりません。初期化を待機します。');
@@ -435,39 +566,41 @@ class DebugMode {
     }
 
     /**
-     * フェーズスキップ
+     * フェーズスキップ（UIから）
      */
     skipToPhase() {
         const select = document.getElementById('debug-phase-select');
         if (!select) return;
-        
-        const phase = select.value;
+        this.skipToPhaseInternal(select.value);
+    }
+
+    /**
+     * フェーズスキップ内部実装
+     */
+    skipToPhaseInternal(phase) {
         console.log(`[DEBUG MODE] フェーズスキップ: ${phase}`);
         
         switch(phase) {
             case 'title':
-                // タイトルに戻る
                 location.reload();
                 break;
             case 'char_creation':
-                // キャラ作成画面へ
                 if (typeof showCharacterCreation === 'function') {
                     showCharacterCreation();
                 }
                 break;
             case 'karma_test':
-                // カルマテストへ
                 if (typeof startEvaluation === 'function') {
                     startEvaluation();
                 }
                 break;
             case 'exploration':
-                // 探索フェーズへ（LocationManager表示）
                 if (window.locationManager) {
                     window.locationManager.show();
                     window.locationManager.updateUI();
                 } else if (window.LocationManager) {
                     window.locationManager = new window.LocationManager();
+                    window.locationManager.init();
                     window.locationManager.show();
                 }
                 break;
