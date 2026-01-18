@@ -585,32 +585,25 @@ class DebugMode {
                 location.reload();
                 break;
             case 'char_creation':
+                if (window.uiManager && window.uiManager.switchToState) {
+                    window.uiManager.switchToState(UIManager.STATES.CHAR_MAKE);
+                }
                 if (typeof showCharacterCreation === 'function') {
                     showCharacterCreation();
                 }
                 break;
             case 'karma_test':
-                // UIセットアップ
-                const bgLayer = document.getElementById('background-layer');
-                const evalSection = document.getElementById('evaluation');
-                const titleUI = document.getElementById('title-screen-ui');
-                const bootScreen = document.getElementById('boot-screen');
-                
-                // ブート・タイトル非表示
-                if (bootScreen) bootScreen.classList.add('hidden');
-                if (titleUI) titleUI.style.display = 'none';
-                
-                // カウンセリング背景
-                if (bgLayer) {
-                    bgLayer.classList.remove('bg-title', 'bg-sky');
-                    bgLayer.classList.add('bg-counseling');
-                }
-                
-                // 評価セクション表示（確実に表示）
-                if (evalSection) {
-                    evalSection.classList.remove('hidden');
-                    evalSection.classList.add('active');
-                    evalSection.style.display = 'block';
+                // UIを一括切り替え (C案の実装)
+                if (window.uiManager && window.uiManager.switchToState) {
+                    window.uiManager.switchToState(UIManager.STATES.EVALUATION);
+                } else {
+                    // フォールバック
+                    const evalSection = document.getElementById('evaluation');
+                    if (evalSection) {
+                        evalSection.classList.remove('hidden');
+                        evalSection.classList.add('active');
+                        evalSection.style.display = 'block';
+                    }
                 }
                 
                 // BGM再生
@@ -621,18 +614,26 @@ class DebugMode {
                 // 評価開始
                 if (typeof window.startEvaluation === 'function') {
                     window.startEvaluation();
+                } else if (typeof startEvaluation === 'function') {
+                    startEvaluation();
                 } else {
                     console.error('[DEBUG MODE] startEvaluation関数が見つかりません');
                 }
                 break;
             case 'exploration':
+                if (window.uiManager && window.uiManager.switchToState) {
+                    window.uiManager.switchToState(UIManager.STATES.EXPLORATION);
+                }
+                
+                // ロケーションマネージャーの確保
+                if (!window.locationManager && window.LocationManager) {
+                    window.locationManager = new window.LocationManager();
+                    window.locationManager.init();
+                }
+                
                 if (window.locationManager) {
                     window.locationManager.show();
                     window.locationManager.updateUI();
-                } else if (window.LocationManager) {
-                    window.locationManager = new window.LocationManager();
-                    window.locationManager.init();
-                    window.locationManager.show();
                 }
                 break;
         }
